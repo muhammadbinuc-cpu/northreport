@@ -244,6 +244,20 @@ body {
   border: 1px solid var(--border-hairline);
 }
 
+/* Glass Card (migrated from animations.css -- solid surface for light mode) */
+.glass-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass-md);
+  transition: all var(--duration-fast) var(--ease-smooth);
+  /* No backdrop-blur -- solid surface for light mode */
+}
+
+.glass-card:hover {
+  box-shadow: var(--shadow-glass-lg);
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    STATUS CHIPS (Paper Style)
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -262,32 +276,32 @@ body {
 }
 
 .status-chip--critical {
-  background: rgba(201, 61, 61, 0.1);
-  border-color: rgba(201, 61, 61, 0.3);
+  background: rgba(185, 28, 28, 0.08);
+  border-color: rgba(185, 28, 28, 0.25);
   color: var(--status-critical);
 }
 
 .status-chip--warning {
-  background: rgba(212, 130, 10, 0.1);
-  border-color: rgba(212, 130, 10, 0.3);
+  background: rgba(194, 65, 12, 0.08);
+  border-color: rgba(194, 65, 12, 0.25);
   color: var(--status-warning);
 }
 
 .status-chip--caution {
-  background: rgba(184, 153, 36, 0.1);
-  border-color: rgba(184, 153, 36, 0.3);
+  background: rgba(146, 64, 14, 0.08);
+  border-color: rgba(146, 64, 14, 0.25);
   color: var(--status-caution);
 }
 
 .status-chip--info {
-  background: rgba(61, 122, 153, 0.1);
-  border-color: rgba(61, 122, 153, 0.3);
+  background: rgba(37, 99, 235, 0.08);
+  border-color: rgba(37, 99, 235, 0.25);
   color: var(--status-info);
 }
 
 .status-chip--success {
-  background: rgba(61, 139, 95, 0.1);
-  border-color: rgba(61, 139, 95, 0.3);
+  background: rgba(22, 101, 52, 0.08);
+  border-color: rgba(22, 101, 52, 0.25);
   color: var(--status-success);
 }
 
@@ -306,26 +320,26 @@ body {
 }
 
 .chip-critical {
-  background: rgba(201, 61, 61, 0.1);
-  border-color: rgba(201, 61, 61, 0.3);
+  background: rgba(185, 28, 28, 0.08);
+  border-color: rgba(185, 28, 28, 0.25);
   color: var(--status-critical);
 }
 
 .chip-high {
-  background: rgba(212, 130, 10, 0.1);
-  border-color: rgba(212, 130, 10, 0.3);
+  background: rgba(194, 65, 12, 0.08);
+  border-color: rgba(194, 65, 12, 0.25);
   color: var(--status-warning);
 }
 
 .chip-medium {
-  background: rgba(184, 153, 36, 0.1);
-  border-color: rgba(184, 153, 36, 0.3);
+  background: rgba(146, 64, 14, 0.08);
+  border-color: rgba(146, 64, 14, 0.25);
   color: var(--status-caution);
 }
 
 .chip-low {
-  background: rgba(61, 139, 95, 0.1);
-  border-color: rgba(61, 139, 95, 0.3);
+  background: rgba(22, 101, 52, 0.08);
+  border-color: rgba(22, 101, 52, 0.25);
   color: var(--status-success);
 }
 
@@ -364,8 +378,8 @@ body {
   height: 14px;
   background: var(--accent-primary);
   border-radius: 50%;
-  border: 3px solid rgba(18, 18, 18, 0.8);
-  box-shadow: 0 0 12px rgba(139, 26, 43, 0.6);
+  border: 3px solid var(--palette-cream);
+  box-shadow: var(--shadow-glow-accent);
   z-index: 2;
 }
 
@@ -538,7 +552,7 @@ body {
   font-family: var(--font-utility);
   font-size: 14px;
   color: var(--ink-primary);
-  box-shadow: 0 1px 2px rgba(26, 22, 18, 0.04) inset;
+  box-shadow: var(--shadow-pressed);
   transition: all var(--duration-fast) var(--ease-smooth);
 }
 
@@ -673,8 +687,8 @@ body {
 
 /* District Plates */
 .map-district-plate {
-  background: rgba(250, 248, 245, 0.95);
-  border: 1px solid rgba(26, 22, 18, 0.12);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: 4px 10px;
   box-shadow: var(--shadow-paper-sm);
@@ -693,7 +707,7 @@ body {
   border: 2px solid var(--ink-primary);
   border-radius: var(--radius-sm);
   padding: var(--space-2) var(--space-3);
-  box-shadow: 2px 2px 0 rgba(26, 22, 18, 0.1);
+  box-shadow: var(--shadow-glass-sm);
   text-align: center;
   pointer-events: auto;
   cursor: pointer;
@@ -702,7 +716,7 @@ body {
 
 .map-poi-stamp:hover {
   transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0 rgba(26, 22, 18, 0.12);
+  box-shadow: var(--shadow-glass-md);
 }
 
 .map-poi-stamp__icon {
@@ -722,10 +736,10 @@ body {
 
 /* Road Capsules */
 .map-road-capsule {
-  background: rgba(250, 248, 245, 0.9);
+  background: var(--bg-card);
   border-radius: var(--radius-full);
   padding: 2px 8px;
-  box-shadow: 0 1px 2px rgba(26, 22, 18, 0.08);
+  box-shadow: var(--shadow-glass-sm);
   font-family: var(--font-utility);
   font-size: 9px;
   font-weight: 500;
@@ -835,7 +849,7 @@ body {
   color: var(--ink-primary);
   font-family: var(--font-utility);
   font-size: 14px;
-  box-shadow: 0 1px 2px rgba(26, 22, 18, 0.04) inset;
+  box-shadow: var(--shadow-pressed);
   transition: all var(--duration-fast) var(--ease-smooth);
   outline: none;
 }
@@ -906,45 +920,45 @@ body {
 
 .ty-display-xl {
   font-family: var(--font-display);
-  font-size: 32px;
-  font-weight: 400;
+  font-size: 40px;
+  font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.15;
 }
 
 .ty-display-lg {
   font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 400;
+  font-size: 32px;
+  font-weight: 600;
   letter-spacing: -0.01em;
   line-height: 1.2;
 }
 
 .ty-display-md {
   font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 400;
+  font-size: 24px;
+  font-weight: 600;
   letter-spacing: -0.01em;
   line-height: 1.25;
 }
 
 .ty-heading-lg {
-  font-family: var(--font-utility);
-  font-size: 16px;
+  font-family: var(--font-display);
+  font-size: 20px;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.3;
 }
 
 .ty-heading-md {
-  font-family: var(--font-utility);
-  font-size: 14px;
+  font-family: var(--font-display);
+  font-size: 16px;
   font-weight: 600;
   line-height: 1.4;
 }
 
 .ty-body-lg {
   font-family: var(--font-utility);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 400;
   letter-spacing: 0.01em;
   line-height: 1.55;

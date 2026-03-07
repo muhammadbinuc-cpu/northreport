@@ -1,7 +1,7 @@
-/* SafePulse Landing Page Animations */
+/* NorthReport Landing Page Animations */
 /* GPU-accelerated keyframes and utility classes */
 
-/* Teal glow pulse animation for markers */
+/* Crimson glow pulse animation for markers */
 @keyframes pulse-glow {
   0%, 100% {
     transform: scale(1);
@@ -87,17 +87,6 @@
     transform: translateY(0);
     opacity: 1;
   }
-}
-
-/* Glass card styling */
-.glass-card {
-  background: rgba(15, 25, 45, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 2rem;
-  will-change: transform, opacity;
 }
 
 /* Animation utility classes */
