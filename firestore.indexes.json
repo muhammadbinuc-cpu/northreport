@@ -1,0 +1,30 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "voices",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "neighborhood", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "voices",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "neighborhood", "order": "ASCENDING" },
+        { "fieldPath": "type", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "reports",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "neighborhood", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
