@@ -32,11 +32,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Card shadows appear subtle and appropriate on light backgrounds (not the heavy dark-mode shadows)
   4. Headings render in Outfit font and body text renders in Inter font with visually distinct size hierarchy across all pages
   5. Running a contrast checker on any text/background combination on any page passes WCAG AA (4.5:1 for body text, 3:1 for large text), and Muted Rose (#A07070) appears only on decorative non-text elements
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md -- Rewrite globals.css token system (primitives, semantics, @theme inline), update typography classes, component CSS classes, shadow system, status colors, and migrate .glass-card
+- [ ] 01-02-PLAN.md -- Automated CSS audits and visual verification checkpoint
 
 ### Phase 2: Navigation Shell
 **Goal**: Users navigate between all sections of the app through a brand-consistent sidebar on desktop and bottom tab bar on mobile, with clear visual indication of where they are
@@ -136,7 +136,7 @@ Note: Phase 5 (Maps) and Phase 6 (Landing) depend only on Phases 1-2 and Phase 1
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Design Token Foundation | 0/2 | Not started | - |
+| 1. Design Token Foundation | 0/2 | Planning complete | - |
 | 2. Navigation Shell | 0/1 | Not started | - |
 | 3. Feed Components | 0/2 | Not started | - |
 | 4. Dashboard and Report Components | 0/2 | Not started | - |
