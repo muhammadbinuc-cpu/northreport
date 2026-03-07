@@ -1,62 +1,78 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap');
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   DARK THEME DESIGN SYSTEM
-   Premium dark UI with glass-morphism, blue accents, and smooth gradients
+   NORTHREPORT DESIGN SYSTEM
+   Light-mode brand palette (Maroon / Cream / Charcoal)
+   Three-layer token architecture: Primitives -> Semantics -> @theme inline
    ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* ─── Background Surfaces ─── */
-  --bg-base: #0A0E14;
-  --bg-elevated: #111820;
-  --bg-card: rgba(17, 24, 32, 0.85);
-  --bg-glass: rgba(17, 24, 32, 0.6);
-  --bg-hover: rgba(255, 255, 255, 0.05);
+  /* ─── Layer 1: Primitives (Brand Palette -- from NorthReport_ColourScheme.pdf) ─── */
+  --palette-maroon: #6B0F1A;       /* Deep Maroon */
+  --palette-maroon-deep: #4A0A12;  /* Dark Red Ring */
+  --palette-charcoal: #1E1E1E;    /* Dark Charcoal */
+  --palette-cream: #F5F0E1;       /* Warm Cream */
+  --palette-ivory: #FAF7ED;       /* Off-White */
+  --palette-white: #FFFFFF;       /* Pure White */
+  --palette-rose: #A07070;        /* DECORATIVE ONLY -- 3.65:1 on cream, fails AA text */
+  --palette-slate: #555555;       /* Slate Grey */
 
-  /* ─── Text Colors ─── */
-  --text-primary: #F0F4F8;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
-  --text-faint: #475569;
+  /* ─── Layer 2: Semantic Tokens (components consume these via var()) ─── */
 
-  /* ─── Borders ─── */
-  --border-hairline: rgba(255, 255, 255, 0.06);
-  --border-subtle: rgba(255, 255, 255, 0.1);
-  --border-glass: rgba(255, 255, 255, 0.08);
+  /* Surfaces */
+  --bg-base: var(--palette-cream);           /* Page canvas */
+  --bg-elevated: var(--palette-cream);       /* Secondary surfaces */
+  --bg-card: var(--palette-white);           /* Primary cards */
+  --bg-glass: var(--palette-white);          /* Legacy: was rgba dark, now solid white */
+  --bg-hover: rgba(107, 15, 26, 0.05);      /* Subtle maroon tint on hover */
+  --bg-input: var(--palette-ivory);          /* Input/text area backgrounds */
 
-  /* ─── Accent (Cyan/Teal) ─── */
-  --accent-primary: #22D3EE;
-  --accent-hover: #06B6D4;
-  --accent-muted: rgba(34, 211, 238, 0.15);
-  --accent-glow: rgba(34, 211, 238, 0.3);
+  /* Text */
+  --text-primary: var(--palette-charcoal);   /* #1E1E1E -- 14.63:1 on cream */
+  --text-secondary: var(--palette-slate);    /* #555555 -- 6.54:1 on cream */
+  --text-muted: #777777;                     /* Lighter gray -- 4.03:1 on cream (large text only) */
+  --text-faint: #999999;                     /* Non-text decorative -- 2.67:1 on cream */
+  --text-inverse: var(--palette-white);      /* White text on dark surfaces */
 
-  /* ─── Status Colors ─── */
-  --status-critical: #EF4444;
-  --status-warning: #F59E0B;
-  --status-caution: #EAB308;
-  --status-info: #3B82F6;
-  --status-success: #22C55E;
+  /* Accent (Deep Maroon) */
+  --accent-primary: var(--palette-maroon);   /* #6B0F1A -- 10.79:1 on cream */
+  --accent-hover: var(--palette-maroon-deep);/* #4A0A12 */
+  --accent-muted: rgba(107, 15, 26, 0.10);
+  --accent-glow: rgba(107, 15, 26, 0.15);
 
-  /* ─── Severity Colors ─── */
-  --severity-critical: #EF4444;
-  --severity-high: #F97316;
-  --severity-medium: #EAB308;
-  --severity-low: #22C55E;
+  /* Borders (dark-on-light) */
+  --border-hairline: rgba(30, 30, 30, 0.06);
+  --border-subtle: rgba(30, 30, 30, 0.10);
+  --border-glass: rgba(30, 30, 30, 0.08);
 
-  /* ─── Glass Shadows ─── */
-  --shadow-glass-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-glass-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-  --shadow-glass-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-glow-accent: 0 0 20px rgba(34, 211, 238, 0.3);
+  /* Shadows (light-mode calibrated: 0.05-0.15 opacity range) */
+  --shadow-glass-sm: 0 1px 3px rgba(30, 30, 30, 0.05);
+  --shadow-glass-md: 0 4px 12px rgba(30, 30, 30, 0.08);
+  --shadow-glass-lg: 0 8px 24px rgba(30, 30, 30, 0.12);
+  --shadow-glow-accent: 0 0 12px rgba(107, 15, 26, 0.15);
+  --shadow-pressed: 0 1px 2px rgba(30, 30, 30, 0.10) inset;
 
-  /* ─── Legacy aliases ─── */
+  /* Status Colors (WCAG AA verified for light backgrounds) */
+  --status-critical: #B91C1C;
+  --status-warning: #C2410C;
+  --status-caution: #92400E;
+  --status-info: #2563EB;
+  --status-success: #166534;
+
+  /* Severity Colors */
+  --severity-critical: #B91C1C;
+  --severity-high: #C2410C;
+  --severity-medium: #92400E;
+  --severity-low: #166534;
+
+  /* ─── Legacy Aliases (deprecated -- use semantic tokens) ─── */
   --paper-base: var(--bg-base);
-  --paper-elevated: var(--bg-elevated);
-  --paper-warm: var(--bg-card);
+  --paper-elevated: var(--bg-card);          /* Note: elevated now maps to white cards */
+  --paper-warm: var(--bg-elevated);
   --ink-primary: var(--text-primary);
   --ink-secondary: var(--text-secondary);
   --ink-muted: var(--text-muted);
+  --ink-faint: var(--text-faint);
   --shadow-paper-sm: var(--shadow-glass-sm);
   --shadow-paper-md: var(--shadow-glass-md);
   --shadow-paper-lg: var(--shadow-glass-lg);
@@ -98,13 +114,60 @@
   --duration-slow: 0.4s;
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ─── Prose ─── */
+  --prose-width: 65ch;
 }
 
 @theme inline {
+  /* Surfaces -> bg-surface-base, bg-surface-card, etc. */
+  --color-surface-base: var(--bg-base);
+  --color-surface-elevated: var(--bg-elevated);
+  --color-surface-card: var(--bg-card);
+  --color-surface-input: var(--bg-input);
+
+  /* Text -> text-primary, text-secondary, etc. */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-inverse: var(--text-inverse);
+
+  /* Brand -> bg-brand, text-brand, border-brand, etc. */
+  --color-brand: var(--accent-primary);
+  --color-brand-hover: var(--accent-hover);
+  --color-brand-muted: var(--accent-muted);
+
+  /* Palette direct (for explicit color needs) */
+  --color-maroon: var(--palette-maroon);
+  --color-maroon-deep: var(--palette-maroon-deep);
+  --color-cream: var(--palette-cream);
+  --color-ivory: var(--palette-ivory);
+  --color-charcoal: var(--palette-charcoal);
+  --color-rose: var(--palette-rose);
+  --color-slate: var(--palette-slate);
+
+  /* Status */
+  --color-status-critical: var(--status-critical);
+  --color-status-warning: var(--status-warning);
+  --color-status-caution: var(--status-caution);
+  --color-status-info: var(--status-info);
+  --color-status-success: var(--status-success);
+
+  /* Borders -> border-border, border-border-strong */
+  --color-border: var(--border-subtle);
+  --color-border-strong: var(--border-hairline);
+
+  /* Typography */
+  --font-sans: var(--font-utility);
+  --font-display: var(--font-display);
+
+  /* Shadows -> shadow-card, shadow-elevated */
+  --shadow-card: var(--shadow-glass-md);
+  --shadow-elevated: var(--shadow-glass-lg);
+
+  /* Background/foreground (Tailwind defaults) */
   --color-background: var(--bg-base);
   --color-foreground: var(--text-primary);
-  --font-sans: var(--font-utility);
-  --font-serif: var(--font-display);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -117,6 +180,22 @@ body {
   font-family: var(--font-utility);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Dark Surface Scoping (for Deep Maroon sidebar) ─── */
+.dark-surface {
+  --text-primary: var(--palette-white);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-muted: rgba(255, 255, 255, 0.45);
+  --accent-primary: var(--palette-white);
+  --border-hairline: rgba(255, 255, 255, 0.1);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --bg-hover: rgba(255, 255, 255, 0.08);
+}
+
+/* ─── Prose Width Utility ─── */
+.prose-width {
+  max-width: var(--prose-width);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -285,8 +364,8 @@ body {
   height: 14px;
   background: var(--accent-primary);
   border-radius: 50%;
-  border: 3px solid rgba(10, 14, 20, 0.8);
-  box-shadow: 0 0 12px rgba(34, 211, 238, 0.6);
+  border: 3px solid rgba(18, 18, 18, 0.8);
+  box-shadow: 0 0 12px rgba(139, 26, 43, 0.6);
   z-index: 2;
 }
 
