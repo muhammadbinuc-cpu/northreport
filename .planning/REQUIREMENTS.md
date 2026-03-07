@@ -9,19 +9,19 @@ Requirements for the complete UI overhaul. Each maps to roadmap phases.
 
 ### Design Tokens
 
-- [ ] **DTKN-01**: CSS variables in globals.css define the full NorthReport brand palette (Deep Maroon, Dark Charcoal, Warm Cream, Off-White, Muted Rose, Dark Red Ring, Slate Grey)
-- [ ] **DTKN-02**: Tailwind CSS 4 `@theme` block generates utility classes from brand palette tokens (e.g., `bg-maroon`, `text-cream`)
-- [ ] **DTKN-03**: Semantic tokens map brand colors to purposes (surface-base, surface-elevated, text-primary, text-secondary, accent, accent-hover)
-- [ ] **DTKN-04**: All hardcoded hex values and rgba() calls in components replaced with CSS variable references or Tailwind utility classes
-- [ ] **DTKN-05**: Shadow system uses light-mode-appropriate opacity (0.05-0.15 range instead of current 0.3-0.5)
-- [ ] **DTKN-06**: Backdrop-blur effects removed from card surfaces and reserved for floating overlays only
+- [x] **DTKN-01**: CSS variables in globals.css define the full NorthReport brand palette (Deep Maroon, Dark Charcoal, Warm Cream, Off-White, Muted Rose, Dark Red Ring, Slate Grey)
+- [x] **DTKN-02**: Tailwind CSS 4 `@theme` block generates utility classes from brand palette tokens (e.g., `bg-maroon`, `text-cream`)
+- [x] **DTKN-03**: Semantic tokens map brand colors to purposes (surface-base, surface-elevated, text-primary, text-secondary, accent, accent-hover)
+- [x] **DTKN-04**: All hardcoded hex values and rgba() calls in components replaced with CSS variable references or Tailwind utility classes
+- [x] **DTKN-05**: Shadow system uses light-mode-appropriate opacity (0.05-0.15 range instead of current 0.3-0.5)
+- [x] **DTKN-06**: Backdrop-blur effects removed from card surfaces and reserved for floating overlays only
 
 ### Typography
 
-- [ ] **TYPO-01**: Type scale defined with Outfit for display/headings (600 weight, 20-40px) and Inter for body/caption (400-500 weight, 10-16px)
-- [ ] **TYPO-02**: Consistent typographic hierarchy applied across all pages (display, h1, h2, body, caption, label sizes)
-- [ ] **TYPO-03**: Vertical spacing follows 4px base grid with standard gaps (cards 12-16px, sections 24-32px, card padding 16-20px)
-- [ ] **TYPO-04**: Text containers constrain line length for readability (max-w-prose or equivalent)
+- [x] **TYPO-01**: Type scale defined with Outfit for display/headings (600 weight, 20-40px) and Inter for body/caption (400-500 weight, 10-16px)
+- [x] **TYPO-02**: Consistent typographic hierarchy applied across all pages (display, h1, h2, body, caption, label sizes)
+- [x] **TYPO-03**: Vertical spacing follows 4px base grid with standard gaps (cards 12-16px, sections 24-32px, card padding 16-20px)
+- [x] **TYPO-04**: Text containers constrain line length for readability (max-w-prose or equivalent)
 
 ### Navigation
 
@@ -84,8 +84,8 @@ Requirements for the complete UI overhaul. Each maps to roadmap phases.
 
 ### Accessibility
 
-- [ ] **A11Y-01**: All text/background combinations pass WCAG AA contrast ratios
-- [ ] **A11Y-02**: Muted Rose (#A07070) used only for decorative elements, never for text
+- [x] **A11Y-01**: All text/background combinations pass WCAG AA contrast ratios
+- [x] **A11Y-02**: Muted Rose (#A07070) used only for decorative elements, never for text
 - [ ] **A11Y-03**: prefers-reduced-motion media query respected for all animations
 
 ### Polish
@@ -132,16 +132,16 @@ Deferred to future release. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DTKN-01 | Phase 1 | Pending |
-| DTKN-02 | Phase 1 | Pending |
-| DTKN-03 | Phase 1 | Pending |
-| DTKN-04 | Phase 1 | Pending |
-| DTKN-05 | Phase 1 | Pending |
-| DTKN-06 | Phase 1 | Pending |
-| TYPO-01 | Phase 1 | Pending |
-| TYPO-02 | Phase 1 | Pending |
-| TYPO-03 | Phase 1 | Pending |
-| TYPO-04 | Phase 1 | Pending |
+| DTKN-01 | Phase 1 | Complete |
+| DTKN-02 | Phase 1 | Complete |
+| DTKN-03 | Phase 1 | Complete |
+| DTKN-04 | Phase 1 | Complete |
+| DTKN-05 | Phase 1 | Complete |
+| DTKN-06 | Phase 1 | Complete |
+| TYPO-01 | Phase 1 | Complete |
+| TYPO-02 | Phase 1 | Complete |
+| TYPO-03 | Phase 1 | Complete |
+| TYPO-04 | Phase 1 | Complete |
 | NAVG-01 | Phase 2 | Pending |
 | NAVG-02 | Phase 2 | Pending |
 | NAVG-03 | Phase 2 | Pending |
@@ -180,8 +180,8 @@ Deferred to future release. Tracked but not in current roadmap.
 | DASH-02 | Phase 4 | Pending |
 | DASH-03 | Phase 4 | Pending |
 | DASH-04 | Phase 4 | Pending |
-| A11Y-01 | Phase 1 | Pending |
-| A11Y-02 | Phase 1 | Pending |
+| A11Y-01 | Phase 1 | Complete |
+| A11Y-02 | Phase 1 | Complete |
 | A11Y-03 | Phase 7 | Pending |
 | PLSH-01 | Phase 7 | Pending |
 | PLSH-02 | Phase 7 | Pending |
