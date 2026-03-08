@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
+import { Inter, Outfit, Playfair_Display } from "next/font/google";
 import { Auth0Provider } from "@auth0/nextjs-auth0";
 import "./globals.css";
 
@@ -14,6 +14,12 @@ const outfit = Outfit({
   weight: ["500", "600", "700"],
 });
 
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  weight: ["400", "700", "800"],
+});
+
 export const metadata: Metadata = {
   title: "City Heatmap — Real-time Urban Intelligence",
   description: "Feed-first, AI-powered neighborhood safety platform for Waterloo",
@@ -26,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${outfit.variable} antialiased`}>
+      <body className={`${inter.variable} ${outfit.variable} ${playfair.variable} antialiased`}>
         <Auth0Provider>{children}</Auth0Provider>
       </body>
     </html>

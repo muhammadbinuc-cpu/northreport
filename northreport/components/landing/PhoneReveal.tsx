@@ -26,13 +26,13 @@ function FeedScreen() {
       >
         <div
           className="w-5 h-5 rounded-full flex items-center justify-center"
-          style={{ background: "#8b1a2b" }}
+          style={{ background: "#6b0f1a" }}
         >
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
             <polygon points="5,1 6,5 5,4.5 4,5" fill="white" />
           </svg>
         </div>
-        <span className="text-xs font-semibold" style={{ color: "#1a1a1a" }}>
+        <span className="text-xs font-semibold" style={{ color: "#1e1e1e" }}>
           NorthReport Feed
         </span>
       </div>
@@ -46,7 +46,7 @@ function FeedScreen() {
             <div className="flex items-center gap-2 mb-1.5">
               <span
                 className="px-2 py-0.5 rounded-full text-[10px] font-semibold"
-                style={{ background: "#f2d5da", color: "#8b1a2b" }}
+                style={{ background: "#f2d5da", color: "#6b0f1a" }}
               >
                 {item.category}
               </span>
@@ -54,14 +54,14 @@ function FeedScreen() {
                 {item.time}
               </span>
             </div>
-            <p className="text-[11px] font-medium leading-snug" style={{ color: "#1a1a1a" }}>
+            <p className="text-[11px] font-medium leading-snug" style={{ color: "#1e1e1e" }}>
               {item.title}
             </p>
             <div className="flex items-center gap-1 mt-1.5">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="#8b1a2b">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="#6b0f1a">
                 <path d="M12 4l-8 8h5v8h6v-8h5z" />
               </svg>
-              <span className="text-[10px] font-medium" style={{ color: "#8b1a2b" }}>
+              <span className="text-[10px] font-medium" style={{ color: "#6b0f1a" }}>
                 {item.votes}
               </span>
             </div>
@@ -143,7 +143,7 @@ function VoiceScreen() {
         />
         <div
           className="relative w-16 h-16 rounded-full flex items-center justify-center z-10"
-          style={{ background: "#8b1a2b" }}
+          style={{ background: "#6b0f1a" }}
         >
           <svg
             width="26"
@@ -162,7 +162,7 @@ function VoiceScreen() {
           </svg>
         </div>
       </div>
-      <p className="text-sm font-semibold" style={{ color: "#1a1a1a" }}>
+      <p className="text-sm font-semibold" style={{ color: "#1e1e1e" }}>
         Listening...
       </p>
       <p className="text-xs" style={{ color: "#8a8279" }}>
