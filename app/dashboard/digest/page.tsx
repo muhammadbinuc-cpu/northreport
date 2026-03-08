@@ -7,7 +7,7 @@ import DigestView from '@/components/DigestView';
 import { NEIGHBORHOODS } from '@/lib/constants';
 
 export default function DigestPage() {
-  const [neighborhood, setNeighborhood] = useState('downtown-hamilton');
+  const [neighborhood, setNeighborhood] = useState('downtown-waterloo');
 
   return (
     <AppShell>

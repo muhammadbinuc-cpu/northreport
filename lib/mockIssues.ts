@@ -59,7 +59,7 @@ export const INITIAL_MOCK_ISSUES: MockIssue[] = [
         severity: 'high',
         latitude: 43.2557,
         longitude: -79.9192,
-        neighborhood: 'downtown-hamilton',
+        neighborhood: 'downtown-waterloo',
         imageUrl: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=400&q=80',
         upvotes: 24,
         comments: [
@@ -75,7 +75,7 @@ export const INITIAL_MOCK_ISSUES: MockIssue[] = [
         severity: 'medium',
         latitude: 43.2580,
         longitude: -79.9210,
-        neighborhood: 'downtown-hamilton',
+        neighborhood: 'downtown-waterloo',
         imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80',
         upvotes: 18,
         comments: [],
@@ -89,7 +89,7 @@ export const INITIAL_MOCK_ISSUES: MockIssue[] = [
         severity: 'low',
         latitude: 43.2540,
         longitude: -79.9170,
-        neighborhood: 'downtown-hamilton',
+        neighborhood: 'downtown-waterloo',
         imageUrl: 'https://images.unsplash.com/photo-1541123603104-512919d6a96c?w=400&q=80',
         upvotes: 12,
         comments: [
@@ -141,7 +141,7 @@ export function generateRandomIssue(): MockIssue {
         { title: 'Water Main Leak', category: 'utilities', severity: 'critical' as const },
     ];
 
-    const neighborhoods = ['downtown-hamilton', 'north-end', 'westdale', 'dundas', 'ancaster'];
+    const neighborhoods = ['downtown-waterloo', 'north-end', 'westdale', 'dundas', 'ancaster'];
     const images = [
         'https://images.unsplash.com/photo-1517732306149-e8f829eb588a?w=400&q=80',
         'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=400&q=80',
