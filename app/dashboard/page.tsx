@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
 import { AnimatePresence } from 'framer-motion';
@@ -140,6 +140,19 @@ export default function DashboardPage() {
   const [selectedDraft, setSelectedDraft] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [detecting, setDetecting] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  // Close profile dropdown on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileOpen(false);
+      }
+    }
+    if (profileOpen) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [profileOpen]);
 
   useEffect(() => {
     async function load() {
@@ -208,27 +221,75 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-        <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col">
         {/* Page Header */}
         <div className="shrink-0 max-w-[800px] w-full mx-auto px-6 pt-6 pb-2 flex items-center justify-between">
           <h1 className="text-2xl font-semibold text-[var(--text-primary)]" style={{ fontFamily: 'var(--font-display)' }}>
             Command Center
           </h1>
-          {/* Neighborhood Selector */}
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--bg-base)] border border-black/[0.06]">
-            <span className="text-[var(--accent-primary)]">{icons.location}</span>
-            <select
-              value={neighborhood}
-              onChange={(e) => setNeighborhood(e.target.value)}
-              className="bg-transparent outline-none cursor-pointer text-sm font-medium text-[var(--text-primary)]"
-            >
-              {NEIGHBORHOODS.map((n) => (
-                <option key={n.slug} value={n.slug}>
-                  {n.name}
-                </option>
-              ))}
-            </select>
-            <span className="text-[var(--text-muted)]">{icons.chevronDown}</span>
+          <div className="flex items-center gap-3">
+            {/* Neighborhood Selector */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--bg-base)] border border-black/[0.06]">
+              <span className="text-[var(--accent-primary)]">{icons.location}</span>
+              <select
+                value={neighborhood}
+                onChange={(e) => setNeighborhood(e.target.value)}
+                className="bg-transparent outline-none cursor-pointer text-sm font-medium text-[var(--text-primary)]"
+              >
+                {NEIGHBORHOODS.map((n) => (
+                  <option key={n.slug} value={n.slug}>
+                    {n.name}
+                  </option>
+                ))}
+              </select>
+              <span className="text-[var(--text-muted)]">{icons.chevronDown}</span>
+            </div>
+
+            {/* Profile avatar + dropdown */}
+            {user && (
+              <div className="relative" ref={profileRef}>
+                <button
+                  onClick={() => setProfileOpen(!profileOpen)}
+                  className="w-9 h-9 rounded-full overflow-hidden border-2 border-transparent hover:border-[var(--accent-primary)]/40 transition-all cursor-pointer"
+                  aria-label="Profile menu"
+                >
+                  {user.picture ? (
+                    <img
+                      src={user.picture}
+                      alt={user.name || 'Profile'}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-[var(--accent-primary)]/20 flex items-center justify-center text-sm font-bold text-[var(--accent-primary)]">
+                      {(user.name || 'U')[0].toUpperCase()}
+                    </div>
+                  )}
+                </button>
+
+                {profileOpen && (
+                  <div
+                    className="absolute right-0 top-12 w-56 rounded-xl shadow-lg border border-black/[0.08] overflow-hidden z-50"
+                    style={{ background: 'var(--bg-base)' }}
+                  >
+                    <div className="px-4 py-3 border-b border-black/[0.06]">
+                      <p className="text-sm font-medium text-[var(--text-primary)] truncate">{user.name}</p>
+                      <p className="text-xs text-[var(--text-muted)] truncate">{user.email}</p>
+                    </div>
+                    <a
+                      href="/auth/logout"
+                      className="flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors w-full"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                      </svg>
+                      Logout
+                    </a>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -280,9 +341,8 @@ export default function DashboardPage() {
                               )}
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <span className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase border ${
-                                    severityChipClass[draft.severity] || severityChipClass.medium
-                                  }`}>
+                                  <span className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase border ${severityChipClass[draft.severity] || severityChipClass.medium
+                                    }`}>
                                     {draft.severity || 'medium'}
                                   </span>
                                   <span className="text-xs text-[var(--text-secondary)] capitalize">
