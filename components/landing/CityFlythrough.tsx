@@ -9,6 +9,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import problems from "./mapData";
 import TextPanel from "./TextPanel";
 import PhoneMockup from "./PhoneMockup";
+import NorthReportLogo from "./NorthReportLogo";
 
 /* ── Camera keyframes (unchanged) ─────────────────────── */
 
@@ -96,16 +97,13 @@ function FinaleOverlay({ visible }: { visible: boolean }) {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.1 }}
           >
-            <h2 className="text-5xl md:text-6xl font-bold mb-3">
-              <span className="text-white">North</span>
-              <span style={{ color: "#8b1a2b" }}>Report</span>
-            </h2>
+            <NorthReportLogo size="xl" variant="light" />
           </motion.div>
 
           {/* Tagline */}
           <motion.p
-            className="text-lg md:text-xl mb-8 max-w-md"
-            style={{ color: "rgba(255,255,255,0.8)" }}
+            className="text-lg md:text-xl mb-8 mt-4 max-w-md"
+            style={{ color: "rgba(255,255,255,0.85)" }}
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -121,11 +119,11 @@ function FinaleOverlay({ visible }: { visible: boolean }) {
           >
             <Link
               href={user ? "/dashboard" : "/api/auth/login"}
-              className="inline-block px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-200 shadow-lg"
-              style={{ background: "#fff", color: "#8b1a2b" }}
+              className="inline-block px-8 py-4 text-lg font-semibold rounded-lg transition-all duration-200 shadow-lg"
+              style={{ background: "#6b0f1a", color: "#fff" }}
               aria-label={user ? "Go to your NorthReport dashboard" : "Get started with NorthReport"}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "#f0ece6")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#4a0a12")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "#6b0f1a")}
             >
               {user ? "Go to Dashboard →" : "Get Started →"}
             </Link>
@@ -207,23 +205,144 @@ function ScrollIndicator({ visible }: { visible: boolean }) {
 function FixedLogo() {
   return (
     <div
-      className="fixed top-5 left-5 z-50 flex items-center gap-2 pointer-events-none"
-      style={{ opacity: 0.85 }}
+      className="fixed top-5 left-5 z-50 pointer-events-none rounded-full px-3 py-1.5"
+      style={{
+        background: "rgba(255,255,255,0.75)",
+        backdropFilter: "blur(8px)",
+        border: "1px solid rgba(255,255,255,0.3)",
+      }}
     >
-      <div
-        className="w-8 h-8 rounded-full flex items-center justify-center"
-        style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.2)" }}
-      >
-        <svg width="16" height="16" viewBox="0 0 44 44" fill="none">
-          <polygon points="22,5 25.5,22 22,19.5 18.5,22" fill="white" />
-          <polygon points="22,39 25.5,22 22,24.5 18.5,22" fill="rgba(255,255,255,0.5)" />
-          <circle cx="22" cy="22" r="2.5" fill="white" />
-        </svg>
-      </div>
-      <span className="text-sm font-bold tracking-tight text-white drop-shadow-md">
-        North<span style={{ color: "#8b1a2b" }}>Report</span>
-      </span>
+      <NorthReportLogo size="sm" />
     </div>
+  );
+}
+
+/* ── Hero logo overlay (before scrolling) ────────────── */
+
+function HeroLogo({ visible }: { visible: boolean }) {
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          key="hero-logo"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="fixed inset-0 z-[42] flex items-center justify-center pointer-events-none"
+        >
+          <div
+            className="backdrop-blur-sm rounded-3xl px-12 py-8"
+            style={{ background: "rgba(245, 240, 225, 0.6)" }}
+          >
+            <NorthReportLogo size="xl" />
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+/* ── Animated count-up hook ──────────────────────────── */
+
+function useCountUp(end: number, duration: number, trigger: boolean) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!trigger) {
+      setCount(0);
+      return;
+    }
+
+    const start = performance.now();
+    let raf: number;
+    const animate = (now: number) => {
+      const elapsed = now - start;
+      const p = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setCount(Math.round(end * eased));
+      if (p < 1) raf = requestAnimationFrame(animate);
+    };
+    raf = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(raf);
+  }, [trigger, end, duration]);
+
+  return count;
+}
+
+/* ── Pothole stats panel with animated counters ──────── */
+
+function PotholePanel({ visible }: { visible: boolean }) {
+  const vehicles = useCountUp(47, 1800, visible);
+  const damage = useCountUp(12000, 1800, visible);
+  const months = useCountUp(6, 1800, visible);
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          key="pothole-panel"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className={[
+            "fixed z-40 pointer-events-none",
+            "bottom-0 left-0 right-0 rounded-t-2xl p-6 max-w-full",
+            "md:bottom-auto md:rounded-2xl md:p-8",
+            "md:left-8 md:right-auto md:top-1/2 md:-translate-y-1/2 md:max-w-[420px]",
+            "backdrop-blur-xl",
+          ].join(" ")}
+          style={{
+            background: "rgba(255, 255, 255, 0.85)",
+            border: "1px solid rgba(107, 15, 26, 0.15)",
+            willChange: "opacity, transform",
+          }}
+        >
+          <span
+            className="inline-block rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wider text-white mb-4"
+            style={{ background: "#6b0f1a", fontFamily: "var(--font-utility)" }}
+          >
+            UNREPORTED
+          </span>
+
+          <h2
+            className="text-xl md:text-2xl lg:text-3xl font-bold leading-tight"
+            style={{ color: "#1e1e1e", fontFamily: "var(--font-display)" }}
+          >
+            This pothole has been here for {months} months.
+          </h2>
+
+          <div className="grid grid-cols-3 gap-3 mt-5">
+            <div className="text-center">
+              <p className="text-2xl md:text-3xl font-bold" style={{ color: "#6b0f1a" }}>
+                {vehicles}
+              </p>
+              <p className="text-xs mt-1" style={{ color: "#555" }}>vehicles daily</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl md:text-3xl font-bold" style={{ color: "#6b0f1a" }}>
+                ${damage.toLocaleString()}
+              </p>
+              <p className="text-xs mt-1" style={{ color: "#555" }}>in damage</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl md:text-3xl font-bold" style={{ color: "#6b0f1a" }}>
+                {months}
+              </p>
+              <p className="text-xs mt-1" style={{ color: "#555" }}>months waiting</p>
+            </div>
+          </div>
+
+          <p
+            className="mt-4 text-sm md:text-base leading-relaxed"
+            style={{ color: "#555", fontFamily: "var(--font-utility)" }}
+          >
+            Nobody reported it — because reporting takes 45 minutes.
+          </p>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -458,9 +577,13 @@ export default function CityFlythrough() {
     ? (progress - 0.62) / 0.08
     : 0;
 
-  const overlayOpacity = progress >= 0.62 && progress < 0.85
-    ? Math.min((progress - 0.62) / 0.04, 1) * 0.6
+  const overlayOpacity = progress >= 0.62
+    ? progress < 0.85
+      ? Math.min((progress - 0.62) / 0.04, 1) * 0.6
+      : 0.65 + Math.min((progress - 0.85) / 0.05, 1) * 0.1
     : 0;
+
+  const showHeroLogo = progress < 0.05;
 
   const showFinale = progress >= 0.85;
   const showScrollIndicator = progress < 0.05;
@@ -475,15 +598,17 @@ export default function CityFlythrough() {
       {/* Loading state */}
       {!mapLoaded && (
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center"
-          style={{ background: "#121212" }}
+          className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-4"
+          style={{ background: "#f5f0e1" }}
         >
+          <NorthReportLogo size="lg" />
           <motion.p
-            className="text-white text-lg font-medium"
+            className="text-sm font-medium"
+            style={{ color: "#555" }}
             animate={{ opacity: [0.4, 1, 0.4] }}
             transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
           >
-            Loading...
+            Loading map...
           </motion.p>
         </div>
       )}
@@ -516,6 +641,9 @@ export default function CityFlythrough() {
           style={{ width: "100%", height: "100%" }}
         />
       </div>
+
+      {/* Hero logo */}
+      <HeroLogo visible={showHeroLogo} />
 
       {/* Scroll indicator */}
       <ScrollIndicator visible={showScrollIndicator} />
@@ -554,14 +682,8 @@ export default function CityFlythrough() {
         visible={progress >= 0.1 && progress < 0.2}
       />
 
-      {/* Phase 3: First pothole */}
-      <TextPanel
-        badge="UNREPORTED"
-        heading="This pothole has been here for 6 months."
-        subtext="47 vehicles hit it daily. It's caused $12,000 in damage. Nobody reported it — because reporting takes 45 minutes."
-        side="left"
-        visible={progress >= 0.2 && progress < 0.35}
-      />
+      {/* Phase 3: First pothole — animated stats */}
+      <PotholePanel visible={progress >= 0.2 && progress < 0.35} />
 
       {/* Phase 4: Streetlight */}
       <TextPanel
@@ -585,7 +707,7 @@ export default function CityFlythrough() {
       <TextPanel
         heading="NorthReport finds them in 3 seconds."
         subtext="Point your camera at any issue. Gemini AI identifies it, finds the responsible department, cites the relevant bylaw, and prepares a report."
-        side="right"
+        side="left"
         visible={progress >= 0.62 && progress < 0.7}
       />
 
@@ -593,7 +715,7 @@ export default function CityFlythrough() {
       <TextPanel
         heading="Watch your city heal in real time."
         subtext="Every report filed. Every pattern detected. Every fix tracked. The community feed turns individual complaints into collective action."
-        side="right"
+        side="left"
         visible={progress >= 0.7 && progress < 0.8}
       />
 
@@ -601,7 +723,7 @@ export default function CityFlythrough() {
       <TextPanel
         heading="See the patterns others miss."
         subtext="AI-powered pattern detection flags systemic issues before they become disasters. Move from reactive repairs to predictive planning."
-        side="right"
+        side="left"
         visible={progress >= 0.8 && progress < 0.85}
       />
 

@@ -123,8 +123,11 @@ function FeedScreen() {
       </div>
       <div className="flex-1 overflow-hidden p-3 space-y-2">
         {items.map((item, i) => (
-          <div
+          <motion.div
             key={i}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: i * 0.15, ease: [0.22, 1, 0.36, 1] }}
             className="rounded-xl p-3"
             style={{
               background: "#fff",
@@ -160,7 +163,7 @@ function FeedScreen() {
                 {item.votes}
               </span>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>
@@ -227,17 +230,14 @@ const PhoneMockup = React.memo(function PhoneMockup({ visible, screen, progress 
     <AnimatePresence>
       {visible && (
         <motion.div
-          initial={{ y: "100vh", opacity: 1 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -100, opacity: 0 }}
+          initial={{ opacity: 0, x: 80 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 40 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed z-50 left-1/2"
-          style={{ top: "50%", transform: "translate(-50%, -50%)", willChange: "transform, opacity" }}
+          className="fixed z-50 top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-[8%]"
+          style={{ willChange: "transform, opacity" }}
         >
-          <motion.div
-            animate={{ y: 0 }}
-            style={{ transform: "translateY(-50%)" }}
-          >
+          <div>
             <div
               className="w-[240px] h-[500px] md:w-[300px] md:h-[620px]"
               style={{
@@ -306,7 +306,7 @@ const PhoneMockup = React.memo(function PhoneMockup({ visible, screen, progress 
                 </AnimatePresence>
               </div>
             </div>
-          </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
