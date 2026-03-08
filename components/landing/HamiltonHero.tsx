@@ -5,7 +5,7 @@ import Map, { type MapRef, Source, Layer } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { motion, useTransform, type MotionValue } from "framer-motion";
 
-interface HamiltonHeroProps {
+interface WaterlooHeroProps {
     scrollProgress: MotionValue<number>;
 }
 
@@ -19,7 +19,7 @@ const PULSE_SIGNALS = [
     { lng: -79.855, lat: 43.262, delay: 5 },
 ];
 
-export default function HamiltonHero({ scrollProgress }: HamiltonHeroProps) {
+export default function WaterlooHero({ scrollProgress }: WaterlooHeroProps) {
     const mapRef = useRef<MapRef>(null);
     const [bearing, setBearing] = useState(-20);
     const [activePulses, setActivePulses] = useState<number[]>([]);
@@ -140,7 +140,7 @@ export default function HamiltonHero({ scrollProgress }: HamiltonHeroProps) {
                 style={{
                     background: `
             linear-gradient(to bottom, rgba(10,10,15,0.3) 0%, rgba(10,10,15,0.6) 50%, rgba(10,10,15,0.9) 100%),
-            radial-gradient(ellipse at 30% 20%, rgba(139,26,43,0.08) 0%, transparent 50%)
+            radial-gradient(ellipse at 30% 20%, rgba(99,102,241,0.08) 0%, transparent 50%)
           `,
                 }}
             />
