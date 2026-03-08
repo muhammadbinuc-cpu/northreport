@@ -228,45 +228,23 @@ OUTPUT SCHEMA:
   "suggestedNextActions": ["string"]
 }`,
 
-  voiceCommand: `You are a strict Classification Engine for NorthReport.
-  
-INPUT: Spoken command (may obtain errors like "be open post", "show pose").
-OUTPUT: The single VALID ACTION that is semantically closest to the input.
+  voiceCommand: `You are NorthReport's voice command classifier. Classify spoken input into exactly ONE of these four commands.
+
+COMMANDS:
+1. "file_report" — File, create, make, or start a report. Reporting an issue/problem/hazard, filing a complaint, submitting to 311. Anything about reporting something.
+2. "take_photo" — Take a photo, snap a picture, capture an image, open the camera, scan or photograph something.
+3. "educate" — Learn, be educated, understand, get information about something, "what is this", "teach me", "explain this".
+4. "submit" — Submit, send, confirm, finalize the current form/report. "submit it", "send it", "go ahead", "yes submit", "confirm".
 
 RULES:
-1. You MUST categorize the input into one of the VALID ACTIONS below.
-2. Do NOT return "unknown" unless the input is completely unrelated (e.g. "I like turtles").
-3. Be aggressive in matching fuzzy speech to the correct action. Ignore filler words like "be", "to", "the", "a".
-4. Focus on keywords to pick the RIGHT action — do NOT default everything to open_feed:
-   - "report", "reports", "issues", "problems" -> navigate: open_reports (e.g. "open reports" -> open_reports, "show reports" -> open_reports, "reports section" -> open_reports)
-   - "post", "posts", "pose" -> navigate: open_posts (e.g. "be open post" -> open_posts, "show pose" -> open_posts)
-   - "stories", "story", "updates" -> navigate: open_stories
-   - "feed", "home" -> navigate: open_feed (ONLY when "feed" or "home" is explicitly mentioned)
-   - "map", "location", "area" -> navigate: open_map
-   - "command", "dashboard", "stats", "data" -> navigate: open_dashboard
-   - "back", "return" -> navigate: go_back
-   - "analyze", "scan", "ai agent", "inspect", "identify", "check this" -> action: analyze_report
+- You MUST pick one of these four. NEVER return anything else.
+- Ignore filler words: "can you", "please", "sorry", "um", "uh", "like", "just", "bro".
+- Be aggressive: "take an image" = take_photo. "I want to report" = file_report. "what's that" = educate. "send it" = submit.
+- If the input is conversational or unclear, default to "file_report".
 
-VALID ACTIONS JSON:
-navigate: open_feed, open_posts, open_stories, open_reports, open_map, open_dashboard, go_back
-action: analyze_report
-create: create_story, create_post, create_report
-interact: upvote, comment, repost, convert_to_report
-ask: explain_item, summarize_item, is_getting_worse
-confirm: file_to_311
-cancel: cancel
-
-Respond ONLY with valid JSON.
-
-OUTPUT SCHEMA:
+Respond ONLY with valid JSON:
 {
-  "intent": "navigate", 
-  "action": "open_feed" | "open_posts" | "open_stories" | "open_reports" | "open_map" | "open_dashboard" | "go_back" | "analyze_report" | "create_story" | "create_post" | "create_report" | "upvote" | "comment" | "repost" | "convert_to_report" | "explain_item" | "summarize_item" | "is_getting_worse" | "file_to_311" | "cancel",
-  "targetId": "string | null",
-  "payload": { "text": "string | null" },
-  "requiresConfirm": boolean,
-  "confirmPrompt": "string | null",
-  "spokenResponse": "string | null"
+  "command": "file_report" | "take_photo" | "educate" | "submit"
 }`,
 
   patternDetection: `You are NorthReport's pattern analysis engine. Given recent reports and voices for a neighborhood, identify clusters, trends, and anomalies. Respond ONLY with valid JSON. No markdown, no explanation.

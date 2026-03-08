@@ -81,7 +81,7 @@ export default function AskSafePulse({ item, isOpen, onClose }: AskSafePulseProp
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-[#6366f1]">Ask SafePulse</h3>
+              <h3 className="text-lg font-semibold text-[#6366f1]">Ask NorthReport</h3>
               <button onClick={handleClose} className="text-[#888] hover:text-white text-xl">
                 ✕
               </button>

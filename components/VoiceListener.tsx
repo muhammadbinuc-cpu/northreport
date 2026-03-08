@@ -24,14 +24,18 @@ const EXIT_WORDS = /\b(exit|stop|quit|turn off|shut up|close)\b/i;
 
 // Wake word patterns - various ways "hey northreport" might be heard (sorted by length for correct matching)
 const WAKE_PATTERNS = [
-  'hey northreport', 'hey north report', 'hey north report', 'hey northreport',
-  'hey pulse', 'a pulse', 'hey poles', 'hey polls',
-  'hey north report', 'a northreport', 'hey north report', 'hey northreport',
-  'hey stables', 'hey safe', 'hey saves', 'hey safety', 'hey staple',
-  'hey say pulse', 'hey say post',
-  "he's safe both", "he's safe", "he is safe", "safe both",
-  "say pulse", "safe pulse", "safe post", "safe poles",
-  "say poles", "say post", "say posts", "hey state", "hey stay"
+  'hey north report', 'hey northreport',
+  'north report', 'northreport',
+  'hey north reports', 'north reports',
+  'nor report', 'nor reports',
+  'hey nor report', 'hey nor reports',
+  'north repo', 'hey north repo',
+  'north repor', 'hey north repor',
+  'north import', 'hey north import',
+  'north airport', 'hey north airport',
+  'north resort', 'hey north resort',
+  'north support', 'hey north support',
+  'nor import', 'nor airport',
 ].sort((a, b) => b.length - a.length);
 
 // Strip wake patterns from command text
@@ -139,47 +143,43 @@ export default function VoiceListener({ enabled }: { enabled: boolean }) {
 
   const executeCommand = useCallback(
     (cmd: Command) => {
-      switch (cmd.action) {
-        case 'open_feed':
-        case 'open_posts':
-          router.push('/feed?type=post');
-          break;
-        case 'open_stories':
-          router.push('/feed?type=story');
-          break;
-        case 'open_reports':
-          router.push('/feed?type=report');
-          break;
-        case 'open_map':
-          router.push('/map');
-          break;
-        case 'open_dashboard':
-          router.push('/dashboard');
-          break;
-        case 'open_311_filing':
-          router.push('/dashboard/auto-file');
-          break;
-        case 'go_back':
-          router.back();
-          break;
-        case 'create_report':
+      const dispatchToReportPage = (eventName: string, detail?: Record<string, unknown>) => {
+        if (window.location.pathname === '/report') {
+          window.dispatchEvent(new CustomEvent(eventName, { detail }));
+        } else {
           router.push('/report');
-          // Give the page time to mount, then trigger camera open
-          setTimeout(() => {
-            window.dispatchEvent(new CustomEvent('northreport:open-camera'));
-          }, 800);
+          // Wait for page to fully mount before dispatching
+          const tryDispatch = (attempts: number) => {
+            setTimeout(() => {
+              window.dispatchEvent(new CustomEvent(eventName, { detail }));
+              // Retry once more in case component wasn't ready
+              if (attempts > 0) {
+                setTimeout(() => window.dispatchEvent(new CustomEvent(eventName, { detail })), 500);
+              }
+            }, 1500);
+          };
+          tryDispatch(1);
+        }
+      };
+
+      switch (cmd.action) {
+        case 'take_photo':
+          dispatchToReportPage('northreport:open-camera', { autoCapture: true });
           break;
-        case 'analyze_report':
-          // Dispatch custom event for SmartReportAgent to pick up
-          window.dispatchEvent(new CustomEvent('northreport:analyze'));
+        case 'file_report':
+          dispatchToReportPage('northreport:auto-file');
+          break;
+        case 'educate':
+          dispatchToReportPage('northreport:educate');
+          break;
+        case 'submit':
+          window.dispatchEvent(new CustomEvent('northreport:submit'));
           break;
         default:
-          if (cmd.spokenResponse) {
-            speakWithBlock(cmd.spokenResponse);
-          }
+          break;
       }
     },
-    [router, speakWithBlock]
+    [router]
   );
 
   // Send command to Gemini and execute result
@@ -214,23 +214,13 @@ export default function VoiceListener({ enabled }: { enabled: boolean }) {
           }),
         });
         const cmd: Command = await res.json();
-        console.log('[VOICE] Gemini response:', cmd);
+        console.log('[VOICE] Command response:', cmd);
         setLastCommand(cmd);
 
-        if (cmd.intent === 'unknown') {
-          speakWithBlock(cmd.spokenResponse || "I didn't understand that. Try again.");
-        } else if (cmd.requiresConfirm) {
-          setConfirmPending(cmd);
-          speakWithBlock(cmd.confirmPrompt || `Please confirm: ${cmd.action}`);
-        } else {
-          // EXECUTE NAVIGATION FIRST
-          executeCommand(cmd);
+        executeCommand(cmd);
 
-          // THEN SPEAK (if needed)
-          if (cmd.spokenResponse) {
-            // We use a slight delay for the speak to allow router transition to start
-            setTimeout(() => speakWithBlock(cmd.spokenResponse!), 100);
-          }
+        if (cmd.spokenResponse) {
+          setTimeout(() => speakWithBlock(cmd.spokenResponse!), 100);
         }
       } catch (err) {
         console.error('[VOICE] Error:', err);
@@ -422,14 +412,14 @@ export default function VoiceListener({ enabled }: { enabled: boolean }) {
             }
           }, 5000);
 
-          // Start/reset 3-second silence timer
+          // Start/reset 1.5-second silence timer for snappier response
           if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
           silenceTimerRef.current = setTimeout(() => {
-            console.log('[VOICE] 3s silence - sending command:', commandBufferRef.current);
+            console.log('[VOICE] 1.5s silence - sending command:', commandBufferRef.current);
             if (commandBufferRef.current) {
               processCommandRef.current(commandBufferRef.current);
             }
-          }, 3000);
+          }, 1500);
         }
       }
     };
