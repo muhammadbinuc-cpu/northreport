@@ -32,7 +32,7 @@ export interface GeneratedForm {
 }
 
 // Waterloo 311 official website
-export const HAMILTON_311_URL = 'https://www.hamilton.ca/home-neighbourhood/get-help-city-services/report-problem-311';
+export const HAMILTON_311_URL = 'https://forms.waterloo.ca/Website/Report-an-issue';
 
 // Common form fields for all categories
 const COMMON_FIELDS: FormField[] = [
@@ -54,7 +54,7 @@ export const CATEGORIES: Category311[] = [
             { name: 'laneAffected', label: 'Lane Affected', type: 'select', required: false, options: ['Left Lane', 'Right Lane', 'Center Lane', 'All Lanes', 'Shoulder'] },
         ],
         submissionSteps: [
-            'Go to hamilton.ca/311 or call 905-546-CITY (2489)',
+            'Go to forms.waterloo.ca/Report-an-issue or call 519-886-1550',
             'Select "Roads & Traffic" from the category menu',
             'Choose "Road Hazard" or "Pothole" as the issue type',
             'Enter the exact location (street address or nearest intersection)',
@@ -75,7 +75,7 @@ export const CATEGORIES: Category311[] = [
             { name: 'intersection', label: 'Intersection', type: 'text', required: false, placeholder: 'Cross streets if applicable' },
         ],
         submissionSteps: [
-            'Go to hamilton.ca/311 or call 905-546-CITY (2489)',
+            'Go to forms.waterloo.ca/Report-an-issue or call 519-886-1550',
             'Select "Roads & Traffic" from the category menu',
             'Choose "Traffic Signal" or "Sign" as the issue type',
             'Provide the exact intersection or location',
@@ -96,7 +96,7 @@ export const CATEGORIES: Category311[] = [
             { name: 'poleNumber', label: 'Pole Number (if visible)', type: 'text', required: false, placeholder: 'Found on metal tag on pole' },
         ],
         submissionSteps: [
-            'Go to hamilton.ca/311 or call 905-546-CITY (2489)',
+            'Go to forms.waterloo.ca/Report-an-issue or call 519-886-1550',
             'Select "Roads & Traffic" category',
             'Choose "Street Lighting" as the issue type',
             'Enter the exact address nearest to the streetlight',
@@ -117,7 +117,7 @@ export const CATEGORIES: Category311[] = [
             { name: 'hazardLevel', label: 'Hazard Level', type: 'select', required: false, options: ['Minor', 'Moderate', 'Severe - Tripping Hazard'] },
         ],
         submissionSteps: [
-            'Go to hamilton.ca/311 or call 905-546-CITY (2489)',
+            'Go to forms.waterloo.ca/Report-an-issue or call 519-886-1550',
             'Select "Roads & Traffic" category',
             'Choose "Sidewalk" as the issue type',
             'Provide the exact address where the damage is located',
@@ -138,7 +138,7 @@ export const CATEGORIES: Category311[] = [
             { name: 'offensive', label: 'Is it offensive?', type: 'select', required: false, options: ['Yes - Offensive/Hateful', 'No - Not Offensive'] },
         ],
         submissionSteps: [
-            'Go to hamilton.ca/311 or call 905-546-CITY (2489)',
+            'Go to forms.waterloo.ca/Report-an-issue or call 519-886-1550',
             'Select "Property & Environment" category',
             'Choose "Graffiti" as the issue type',
             'Enter the exact address or location',
@@ -159,7 +159,7 @@ export const CATEGORIES: Category311[] = [
             { name: 'quantity', label: 'Quantity', type: 'select', required: false, options: ['Small (bag size)', 'Medium (several bags)', 'Large (requires truck)'] },
         ],
         submissionSteps: [
-            'Go to hamilton.ca/311 or call 905-546-CITY (2489)',
+            'Go to forms.waterloo.ca/Report-an-issue or call 519-886-1550',
             'Select "Garbage & Recycling" category',
             'Choose "Litter" or "Illegal Dumping" as appropriate',
             'Provide the exact location of the waste',
@@ -180,7 +180,7 @@ export const CATEGORIES: Category311[] = [
             { name: 'timeOfDay', label: 'Time of Disturbance', type: 'text', required: false, placeholder: 'e.g., 11pm - 2am' },
         ],
         submissionSteps: [
-            'Go to hamilton.ca/311 or call 905-546-CITY (2489)',
+            'Go to forms.waterloo.ca/Report-an-issue or call 519-886-1550',
             'Select "Bylaw & Licensing" category',
             'Choose "Noise Complaint" as the issue type',
             'Enter the address where the noise is coming from',

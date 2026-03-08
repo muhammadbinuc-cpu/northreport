@@ -100,7 +100,7 @@ Return ONLY valid JSON in this exact format:
         // Generate spoken summary for voice mode
         const spokenSummary = `I've prepared a ${category.name} report for ${generatedForm.location}. ` +
             `The issue is: ${generatedForm.description.substring(0, 100)}. ` +
-            `To submit, go to Waterloo 311 online or call 905-546-2489. ` +
+            `To submit, go to Waterloo 311 online or call 519-886-1550. ` +
             `Would you like me to read the step-by-step instructions?`;
 
         const response: Form311Response = {

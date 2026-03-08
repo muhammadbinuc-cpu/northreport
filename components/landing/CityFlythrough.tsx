@@ -118,7 +118,7 @@ function FinaleOverlay({ visible }: { visible: boolean }) {
             transition={{ duration: 0.6, delay: 0.35 }}
           >
             <Link
-              href={user ? "/feed" : "/api/auth/login"}
+              href={user ? "/feed" : "/auth/login"}
               className="inline-block px-8 py-4 text-lg font-semibold rounded-lg transition-all duration-200 shadow-lg"
               style={{ background: "#6b0f1a", color: "#fff" }}
               aria-label={user ? "Go to your NorthReport feed" : "Get started with NorthReport"}
@@ -214,6 +214,28 @@ function FixedLogo() {
     >
       <NorthReportLogo size="sm" />
     </div>
+  );
+}
+
+/* ── Top-right login / dashboard button ───────────────── */
+
+function NavButton() {
+  const { user } = useUser();
+
+  return (
+    <Link
+      href={user ? "/feed" : "/auth/login"}
+      className="fixed top-5 right-5 z-50 rounded-full px-5 py-2 text-sm font-semibold transition-all duration-200"
+      style={{
+        background: "#6b0f1a",
+        color: "#fff",
+        boxShadow: "0 2px 8px rgba(107,15,26,0.3)",
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.background = "#4a0a12")}
+      onMouseLeave={(e) => (e.currentTarget.style.background = "#6b0f1a")}
+    >
+      {user ? "Dashboard →" : "Login →"}
+    </Link>
   );
 }
 
@@ -595,6 +617,9 @@ export default function CityFlythrough() {
       {/* Fixed NorthReport logo */}
       <FixedLogo />
 
+      {/* Top-right login/dashboard button */}
+      <NavButton />
+
       {/* Loading state */}
       {!mapLoaded && (
         <div
@@ -616,7 +641,7 @@ export default function CityFlythrough() {
       {/* Fixed map */}
       <div
         role="img"
-        aria-label="Interactive map of Hamilton showing reported city issues"
+        aria-label="Interactive map of Waterloo showing reported city issues"
         style={{
           position: "fixed",
           inset: 0,

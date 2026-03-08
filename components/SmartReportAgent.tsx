@@ -681,15 +681,15 @@ export default function SmartReportAgent() {
               ) : (
                 <div className="space-y-3">
                   <button
-                    onClick={openCamera}
+                    onClick={() => openCamera()}
                     className="w-full py-8 rounded-xl border-2 border-dashed transition-all duration-300 flex flex-col items-center gap-3"
-                    style={{ borderColor: 'var(--border-subtle)' }}
+                    style={{ borderColor: 'rgba(160, 112, 112, 0.4)' }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(107, 15, 26, 0.3)';
+                      e.currentTarget.style.borderColor = 'rgba(107, 15, 26, 0.5)';
                       e.currentTarget.style.background = 'rgba(107, 15, 26, 0.03)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                      e.currentTarget.style.borderColor = 'rgba(160, 112, 112, 0.4)';
                       e.currentTarget.style.background = 'transparent';
                     }}
                   >
@@ -798,7 +798,7 @@ export default function SmartReportAgent() {
               <button
                 onClick={handleAnalyze}
                 disabled={!image}
-                className="w-full py-3.5 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                className="w-full py-3.5 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{
                   background: 'var(--accent-primary)',
                   boxShadow: '0 4px 12px rgba(107, 15, 26, 0.2)',

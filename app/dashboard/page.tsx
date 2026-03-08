@@ -75,6 +75,33 @@ const icons = {
 };
 
 /* ── Helpers ── */
+function parseTimestamp(val: any): Date | null {
+  if (!val) return null;
+  // Firestore Timestamp serialized as { _seconds, _nanoseconds } or { seconds, nanoseconds }
+  if (typeof val === 'object' && (val._seconds != null || val.seconds != null)) {
+    const secs = val._seconds ?? val.seconds;
+    return new Date(secs * 1000);
+  }
+  // Already a Date
+  if (val instanceof Date) return val;
+  // String or number
+  const d = new Date(val);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function formatTimeAgo(val: any): string {
+  const date = parseTimestamp(val);
+  if (!date) return '';
+  const diff = Date.now() - date.getTime();
+  const mins = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  return `${days}d ago`;
+}
+
 function getStatusLabel(score: number): { label: string; color: string } {
   if (score >= 70) return { label: 'Stable', color: 'text-green-700' };
   if (score >= 50) return { label: 'Declining', color: 'text-amber-700' };
@@ -134,8 +161,8 @@ export default function DashboardPage() {
           const draftReports = (data.reports || [])
             .filter((r: any) => r.status === 'draft')
             .sort((a: any, b: any) => {
-              const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-              const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+              const dateA = parseTimestamp(a.createdAt)?.getTime() || 0;
+              const dateB = parseTimestamp(b.createdAt)?.getTime() || 0;
               return dateB - dateA;
             });
           setDrafts(draftReports);
@@ -239,24 +266,13 @@ export default function DashboardPage() {
                   {drafts.length > 0 ? (
                     <div className="space-y-2">
                       {drafts.map((draft) => {
-                        const createdAt = draft.createdAt ? new Date(draft.createdAt) : null;
-                        let timeAgo = '';
-                        if (createdAt) {
-                          const diff = Date.now() - createdAt.getTime();
-                          const mins = Math.floor(diff / 60000);
-                          const hours = Math.floor(diff / 3600000);
-                          const days = Math.floor(diff / 86400000);
-                          if (mins < 1) timeAgo = 'Just now';
-                          else if (mins < 60) timeAgo = `${mins}m ago`;
-                          else if (hours < 24) timeAgo = `${hours}h ago`;
-                          else timeAgo = `${days}d ago`;
-                        }
+                        const timeAgo = formatTimeAgo(draft.createdAt);
 
                         return (
                           <button
                             key={draft._id || draft.id}
                             onClick={() => setSelectedDraft(draft)}
-                            className="w-full text-left p-4 rounded-lg bg-[var(--bg-base)] border border-black/[0.06] hover:border-[var(--accent-primary)]/30 hover:shadow-sm transition-all cursor-pointer"
+                            className="w-full text-left p-4 rounded-lg bg-[var(--bg-base)] border border-black/[0.06] hover:border-[var(--accent-primary)]/30 hover:shadow-sm hover:bg-[var(--bg-hover)] transition-all cursor-pointer group"
                           >
                             <div className="flex items-start gap-3">
                               {draft.imageUrl && (
@@ -287,7 +303,7 @@ export default function DashboardPage() {
                                   </p>
                                 )}
                               </div>
-                              <span className="text-[var(--accent-primary)] text-xs flex items-center gap-1 shrink-0">
+                              <span className="text-[var(--accent-primary)] text-xs font-semibold flex items-center gap-1 shrink-0 group-hover:underline">
                                 Review {icons.chevronRight}
                               </span>
                             </div>
@@ -383,6 +399,9 @@ export default function DashboardPage() {
                       {icons.patterns}
                     </span>
                     <p className="text-xs font-medium text-[var(--text-primary)]">Patterns</p>
+                    <p className="text-[10px] text-[var(--text-muted)] mt-0.5">
+                      {patterns.length > 0 ? `${patterns.length} emerging this week` : 'Detect recurring issues'}
+                    </p>
                   </Link>
                   <Link
                     href="/dashboard/digest"
@@ -392,6 +411,7 @@ export default function DashboardPage() {
                       {icons.digest}
                     </span>
                     <p className="text-xs font-medium text-[var(--text-primary)]">Digest</p>
+                    <p className="text-[10px] text-[var(--text-muted)] mt-0.5">Weekly neighborhood summary</p>
                   </Link>
                   <Link
                     href="/dashboard/auto-file"
@@ -401,6 +421,9 @@ export default function DashboardPage() {
                       {icons.filing}
                     </span>
                     <p className="text-xs font-medium text-[var(--text-primary)]">311 Filing</p>
+                    <p className="text-[10px] text-[var(--text-muted)] mt-0.5">
+                      {drafts.length > 0 ? `${drafts.length} drafts pending review` : 'File reports to the city'}
+                    </p>
                   </Link>
                 </div>
               </div>
@@ -436,11 +459,13 @@ export default function DashboardPage() {
                             </p>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
-                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide border ${
-                              issue.severity === 'critical' ? 'bg-red-700/[0.08] text-red-700 border-red-700/20' :
-                              issue.severity === 'high' ? 'bg-amber-700/[0.08] text-amber-700 border-amber-700/20' :
-                              'bg-[var(--accent-primary)]/[0.08] text-[var(--accent-primary)] border-[var(--accent-primary)]/20'
-                            }`}>
+                            <span
+                              className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide border"
+                              style={issue.severity === 'critical'
+                                ? { background: 'rgba(185,28,28,0.08)', color: '#b91c1c', borderColor: 'rgba(185,28,28,0.2)' }
+                                : { background: 'rgba(107,15,26,0.08)', color: '#6b0f1a', borderColor: 'rgba(107,15,26,0.2)' }
+                              }
+                            >
                               {issue.severity === 'critical' ? 'Urgent' :
                                 issue.severity === 'high' ? 'Rising' : 'Emerging'}
                             </span>

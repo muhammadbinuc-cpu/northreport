@@ -91,7 +91,7 @@ export default function MapGrid({ scrollProgress }: MapGridProps) {
                             color: "#a5b4fc",
                         }}
                     >
-                        HAMILTON, ON · McMaster Zone
+                        WATERLOO, ON · University Zone
                     </div>
 
                     {/* Pulse signals */}

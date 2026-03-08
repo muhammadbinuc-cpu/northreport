@@ -35,10 +35,18 @@ export default function NavBar() {
         })}
         {user && (
           <Link
-            href="/api/auth/logout"
+            href="/auth/logout"
             className="flex flex-col items-center gap-0.5 px-3 py-1.5 text-[#888] hover:text-[#ccc]"
           >
-            <span className="text-lg">👤</span>
+            {user.picture ? (
+              <img
+                src={user.picture}
+                alt={user.name || 'Profile'}
+                className="w-6 h-6 rounded-full object-cover border border-white/20"
+              />
+            ) : (
+              <span className="text-lg">👤</span>
+            )}
             <span className="text-[10px] font-medium">Logout</span>
           </Link>
         )}

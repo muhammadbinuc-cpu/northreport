@@ -351,21 +351,21 @@ const FluidMap = forwardRef<FluidMapRef, FluidMapProps>(function FluidMap(
                 }
                 .you-dot {
                     position: relative;
-                    width: 20px;
-                    height: 20px;
-                    background: #8b1a2b;
+                    width: 16px;
+                    height: 16px;
+                    background: #6b0f1a;
                     border: 3px solid white;
                     border-radius: 50%;
-                    box-shadow: 0 0 15px rgba(139, 26, 43, 0.8), 0 2px 8px rgba(0,0,0,0.3);
+                    box-shadow: 0 0 10px rgba(107, 15, 26, 0.6), 0 2px 6px rgba(0,0,0,0.2);
                     z-index: 2;
                 }
                 .you-ping {
                     position: absolute;
                     top: 0;
                     left: 0;
-                    width: 20px;
-                    height: 20px;
-                    background: rgba(139, 26, 43, 0.4);
+                    width: 16px;
+                    height: 16px;
+                    background: rgba(107, 15, 26, 0.3);
                     border-radius: 50%;
                     animation: pulse-ring 2s ease-out infinite;
                     transform-origin: center center;
@@ -374,15 +374,15 @@ const FluidMap = forwardRef<FluidMapRef, FluidMapProps>(function FluidMap(
                 }
                 .you-label {
                     position: relative;
-                    margin-top: 6px;
-                    padding: 3px 10px;
-                    background: #8b1a2b;
+                    margin-top: 4px;
+                    padding: 2px 8px;
+                    background: #6b0f1a;
                     color: white;
-                    font-size: 10px;
+                    font-size: 9px;
                     font-weight: 700;
                     letter-spacing: 0.5px;
-                    border-radius: 10px;
-                    box-shadow: 0 0 10px rgba(139, 26, 43, 0.6), 0 2px 6px rgba(0,0,0,0.3);
+                    border-radius: 8px;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
                     z-index: 2;
                 }
                 
@@ -430,6 +430,13 @@ const FluidMap = forwardRef<FluidMapRef, FluidMapProps>(function FluidMap(
                     max-width: 120px;
                     white-space: nowrap;
                     pointer-events: none;
+                    opacity: 0;
+                    transform: scale(0.95);
+                    transition: opacity 0.2s ease, transform 0.2s ease;
+                }
+                .snap-marker:hover .snap-marker-label {
+                    opacity: 1;
+                    transform: scale(1);
                 }
                 .snap-marker-title {
                     color: #1E1E1E;

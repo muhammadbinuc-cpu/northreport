@@ -72,10 +72,13 @@ export default function ReviewDraftDrawer({ draft, onClose, onFileComplete }: Re
 
     // Opens real Waterloo URL and immediately goes to confirm phase (no loading screen)
     const handleSubmitToCity = () => {
-        window.open(
-            'https://www.hamilton.ca/home-neighbourhood/getting-around/streets-sidewalks/road-sidewalk-maintenance',
-            '_blank'
-        );
+        // Route to the appropriate Waterloo reporting page based on category
+        const cat = (draft.category || '').toLowerCase();
+        const isRoadRelated = ['road', 'pothole', 'sidewalk', 'traffic', 'infrastructure'].some(k => cat.includes(k));
+        const url = isRoadRelated
+            ? 'https://www.waterloo.ca/roads-and-cycling/report-a-road-trail-or-sidewalk-issue/'
+            : 'https://forms.waterloo.ca/Website/Report-an-issue';
+        window.open(url, '_blank');
         setPhase('confirm');
     };
 

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { Auth0Client } from '@auth0/nextjs-auth0/server';
 
+// Enable Google social connection in Auth0 Dashboard > Authentication > Social
 const auth0 = new Auth0Client();
 
 /**

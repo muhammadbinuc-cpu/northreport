@@ -329,14 +329,14 @@ export default function FeedPage() {
 
                           {/* Content */}
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-[var(--text-primary)] line-clamp-2 leading-snug">
+                            <p className="text-sm font-medium text-[var(--text-primary)] leading-snug">
+                              {issue.category
+                                ? issue.category.charAt(0).toUpperCase() + issue.category.slice(1)
+                                : issue.title || 'Issue reported'}
+                            </p>
+                            <p className="text-xs text-[var(--text-secondary)] mt-1 line-clamp-2">
                               {issue.title || issue.description}
                             </p>
-                            {issue.description && issue.title && (
-                              <p className="text-xs text-[var(--text-secondary)] mt-1 line-clamp-2">
-                                {issue.description}
-                              </p>
-                            )}
 
                             {/* Meta row */}
                             <div className="flex items-center gap-3 mt-2 text-xs text-[var(--text-muted)]">

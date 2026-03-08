@@ -22,6 +22,7 @@ interface Report {
     category: string;
     severity: string;
     locationApprox?: { lat: number; lng: number; label?: string };
+    location?: { type: string; coordinates: number[] };
     createdAt?: string;
 }
 
@@ -398,6 +399,27 @@ export default function Map3D({ neighborhood, onHotspotSelect, flyToLocation, re
             {loading && (
                 <div className="absolute inset-0 z-20 flex items-center justify-center bg-[var(--paper-base)]/80 backdrop-blur-sm">
                     <div className="w-8 h-8 border-2 border-[var(--accent-primary)] border-t-transparent rounded-full animate-spin" />
+                </div>
+            )}
+
+            {/* Empty state */}
+            {!loading && hotspots.length === 0 && reports.length === 0 && (
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
+                    <div
+                        className="px-6 py-4 rounded-xl text-center backdrop-blur-md"
+                        style={{
+                            background: 'rgba(245, 240, 225, 0.85)',
+                            border: '1px solid rgba(107, 15, 26, 0.1)',
+                            boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                        }}
+                    >
+                        <p className="text-sm font-medium" style={{ color: 'var(--palette-charcoal)' }}>
+                            No active reports in this area
+                        </p>
+                        <p className="text-xs mt-1" style={{ color: 'var(--palette-slate)' }}>
+                            Reports will appear here as they&apos;re filed
+                        </p>
+                    </div>
                 </div>
             )}
 

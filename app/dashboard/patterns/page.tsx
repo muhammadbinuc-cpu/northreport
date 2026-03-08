@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import AppShell from '@/components/AppShell';
 import TopBar from '@/components/TopBar';
 import { PrimaryPatternCard, CompactPatternCard } from '@/components/PatternCard';
@@ -109,6 +110,15 @@ export default function PatternsPage() {
 
         <main className="flex-1 overflow-y-auto">
           <div className="max-w-3xl mx-auto px-6 py-5 space-y-5">
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-1 text-sm font-medium transition-colors"
+              style={{ color: 'var(--text-secondary)' }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-primary)')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
+            >
+              ← Dashboard
+            </Link>
 
             {/* ═══════════════════════════════════════════════════════════════════
                 HEADER BAR - Title, Subtitle, Action Button
