@@ -25,10 +25,10 @@ interface ReportJourneyProps {
 }
 
 // Hardcoded destination
-const TORONTO_CITY_HALL = {
-    lat: 43.6532,
-    lng: -79.3832,
-    name: 'Toronto City Hall',
+const WATERLOO_CITY_HALL = {
+    lat: 43.4643,
+    lng: -80.5204,
+    name: 'Waterloo City Hall',
 };
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
@@ -69,7 +69,7 @@ export default function ReportJourney({
     onComplete,
     isVisible,
 }: ReportJourneyProps) {
-    const dest = TORONTO_CITY_HALL;
+    const dest = WATERLOO_CITY_HALL;
     const mapRef = useRef<MapRef | null>(null);
     const animationRef = useRef<number | null>(null);
     const phaseStartRef = useRef<number>(0);

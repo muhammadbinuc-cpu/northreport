@@ -448,12 +448,19 @@ export default function SmartReportAgent() {
     }
   };
 
-  /* ── Submit Report (hardcoded for testing) ── */
+  /* ── Submit Report ── */
   const handleFile = async () => {
     if (!analysis) return;
     setFilingLoading(true);
-    // Hardcoded Toronto location — skip API call for testing
-    setUserLocation({ lat: 43.6629, lng: -79.3957 });
+    // Get current location
+    try {
+      const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })
+      );
+      setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+    } catch {
+      // Keep default if geolocation fails
+    }
     setReportId(refNumber);
     setFilingLoading(false);
     setStep('form-preview');
@@ -1071,7 +1078,7 @@ h2{font-size:14px;color:#6B0F1A;margin-top:24px;text-transform:uppercase;letter-
 
             <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--palette-cream)', border: '1px solid var(--border-hairline)', boxShadow: 'var(--shadow-glass-md)' }}>
               <div className="px-5 py-3 flex items-center justify-between" style={{ background: 'var(--accent-primary)' }}>
-                <span className="text-xs font-bold text-white tracking-wider uppercase">City of Toronto — 311 Pothole Claim</span>
+                <span className="text-xs font-bold text-white tracking-wider uppercase">City of Waterloo — 311 Pothole Claim</span>
                 <span className="text-[10px] text-white/70 font-mono">{refNumber}</span>
               </div>
 
@@ -1138,7 +1145,7 @@ h2{font-size:14px;color:#6B0F1A;margin-top:24px;text-transform:uppercase;letter-
               onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--accent-primary)'; }}
             >
               <Send className="w-4 h-4" />
-              Submit to City of Toronto 311
+              Submit to City of Waterloo 311
               <ArrowRight className="w-4 h-4" />
             </button>
           </motion.div>
@@ -1151,7 +1158,7 @@ h2{font-size:14px;color:#6B0F1A;margin-top:24px;text-transform:uppercase;letter-
             reportLocation={userLocation}
             reportType="311 Pothole Report"
             onComplete={() => {
-              window.open('https://www.toronto.ca/home/311-toronto-at-your-service/create-a-service-request/service-request/?request=0VS6g000000DzbXGAS', '_blank');
+              window.open('https://forms.waterloo.ca/Website/Report-an-issue?_gl=1*1okku68*_ga*Mzg0NjcyMTk1LjE3NzI5MzQwNTg.*_ga_F03DWSJDKM*czE3NzI5MzkzNDgkbzIkZzEkdDE3NzI5MzkzNTIkajU2JGwwJGgw', '_blank');
               router.push('/dashboard');
             }}
             isVisible={true}
