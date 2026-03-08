@@ -28,6 +28,7 @@ import {
   Clock,
   Hash,
   User,
+  Download,
 } from 'lucide-react';
 
 const ReportJourney = dynamic(() => import('./report-journey/ReportJourney'), { ssr: false });
@@ -287,7 +288,7 @@ export default function SmartReportAgent() {
   const [analysis, setAnalysis] = useState<AgentAnalysis | null>(null);
   const [error, setError] = useState('');
   const [filingLoading, setFilingLoading] = useState(false);
-  const [userLocation, setUserLocation] = useState({ lat: 43.4643, lng: -80.5204 });
+  const [userLocation, setUserLocation] = useState({ lat: 43.6629, lng: -79.3957 });
   const [reportId, setReportId] = useState<string | null>(null);
   const [refNumber] = useState(() => `WR-${Date.now().toString(36).toUpperCase()}`);
 
@@ -447,71 +448,15 @@ export default function SmartReportAgent() {
     }
   };
 
-  /* ── Save & Submit Report ── */
+  /* ── Submit Report (hardcoded for testing) ── */
   const handleFile = async () => {
     if (!analysis) return;
     setFilingLoading(true);
-
-    try {
-      let latitude = userLocation.lat;
-      let longitude = userLocation.lng;
-
-      // Geocode the entered address so the report & animation has a real origin
-      if (address) {
-        try {
-          const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
-          const geoRes = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxToken}&proximity=-80.5204,43.4643&limit=1`);
-          const geoData = await geoRes.json();
-          if (geoData.features && geoData.features.length > 0) {
-            longitude = geoData.features[0].center[0];
-            latitude = geoData.features[0].center[1];
-          }
-        } catch (err) {
-          console.error('Geocoding failed:', err);
-        }
-      }
-
-      const isDefault = latitude === 43.4643 && longitude === -80.5204;
-      if (isDefault) {
-        const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
-          navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })
-        ).catch(() => null);
-        if (pos) {
-          latitude = pos.coords.latitude;
-          longitude = pos.coords.longitude;
-        }
-      }
-
-      // Crucial: Update the state so ReportJourney uses these new coordinates
-      setUserLocation({ lat: latitude, lng: longitude });
-
-      const res = await fetch('/api/reports', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          description: analysis.technical_description,
-          category: 'infrastructure',
-          neighborhood: 'downtown-waterloo',
-          latitude,
-          longitude,
-          imageBase64: image,
-          status: 'submitted',
-        }),
-      });
-
-      const resData = await res.json();
-      if (!res.ok) {
-        throw new Error(resData.error || 'Submitting report failed');
-      }
-      setReportId(resData.id);
-      sessionStorage.setItem('newReportId', resData.id);
-      setUserLocation({ lat: latitude, lng: longitude });
-      setStep('form-preview');
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Submitting report failed');
-    } finally {
-      setFilingLoading(false);
-    }
+    // Hardcoded Toronto location — skip API call for testing
+    setUserLocation({ lat: 43.6629, lng: -79.3957 });
+    setReportId(refNumber);
+    setFilingLoading(false);
+    setStep('form-preview');
   };
 
   /* ─── Transition wrapper ─── */
@@ -1023,8 +968,88 @@ export default function SmartReportAgent() {
           </motion.div>
         )}
 
-        {/* ─────────── STEP 4: FORM PREVIEW ─────────── */}
-        {step === 'form-preview' && analysis && (
+        {/* ─────────── STEP 4: FORM PREVIEW (311 Pothole) ─────────── */}
+        {step === 'form-preview' && analysis && (() => {
+          const now = new Date();
+          const dateStr = now.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' });
+          const timeStr = now.toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit' });
+          const formData = {
+            damageType: 'Pothole',
+            submittingOnOwnBehalf: 'Yes',
+            involvementType: 'Person Affected',
+            firstName: 'NorthReport',
+            lastName: 'User',
+            email: 'user@northreport.ca',
+            phone: '(519) 555-0100',
+            dateOfLoss: dateStr,
+            highway: 'No',
+            incidentAddress: address,
+            incidentCity: 'Toronto',
+            incidentProvince: 'Ontario',
+            incidentCountry: 'Canada',
+            incidentPostalCode: 'M5H 2N2',
+            cause: 'Pothole',
+            source: 'Pothole',
+            description: analysis.technical_description,
+            department: analysis.department,
+            severity: analysis.severity,
+            bylaw: analysis.bylaw_reference,
+            notified311: 'Yes',
+            serviceRequestNumber: refNumber,
+          };
+
+          const downloadPDF = () => {
+            const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>311 Report ${refNumber}</title>
+<style>body{font-family:Georgia,serif;max-width:700px;margin:0 auto;padding:40px 30px;color:#1E1E1E}
+h1{font-size:20px;color:#6B0F1A;border-bottom:2px solid #6B0F1A;padding-bottom:8px}
+h2{font-size:14px;color:#6B0F1A;margin-top:24px;text-transform:uppercase;letter-spacing:1px}
+.field{display:flex;padding:6px 0;border-bottom:1px solid #eee}.label{width:200px;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.5px}.value{flex:1;font-size:13px}
+.header{text-align:center;margin-bottom:20px}.header p{color:#888;font-size:12px}
+.badge{display:inline-block;padding:2px 10px;border-radius:4px;font-size:11px;font-weight:bold;text-transform:uppercase;background:#fef3c7;color:#92400e}
+</style></head><body>
+<div class="header"><h1>City of Waterloo — 311 Service Request</h1><p>Reference: ${refNumber} | Generated: ${dateStr} ${timeStr}</p></div>
+<h2>Claim Type</h2>
+<div class="field"><span class="label">Damage/Injury Type</span><span class="value">${formData.damageType}</span></div>
+<div class="field"><span class="label">Submitting on Own Behalf</span><span class="value">${formData.submittingOnOwnBehalf}</span></div>
+<h2>Claimant Information</h2>
+<div class="field"><span class="label">Involvement</span><span class="value">${formData.involvementType}</span></div>
+<div class="field"><span class="label">Name</span><span class="value">${formData.firstName} ${formData.lastName}</span></div>
+<div class="field"><span class="label">Email</span><span class="value">${formData.email}</span></div>
+<div class="field"><span class="label">Phone</span><span class="value">${formData.phone}</span></div>
+<h2>Incident Details</h2>
+<div class="field"><span class="label">Date of Loss</span><span class="value">${formData.dateOfLoss}</span></div>
+<div class="field"><span class="label">On Highway?</span><span class="value">${formData.highway}</span></div>
+<div class="field"><span class="label">Address</span><span class="value">${formData.incidentAddress}</span></div>
+<div class="field"><span class="label">City</span><span class="value">${formData.incidentCity}</span></div>
+<div class="field"><span class="label">Province</span><span class="value">${formData.incidentProvince}</span></div>
+<div class="field"><span class="label">Country</span><span class="value">${formData.incidentCountry}</span></div>
+<div class="field"><span class="label">Postal Code</span><span class="value">${formData.incidentPostalCode}</span></div>
+<div class="field"><span class="label">Cause</span><span class="value">${formData.cause}</span></div>
+<div class="field"><span class="label">Source</span><span class="value">${formData.source}</span></div>
+<div class="field"><span class="label">Severity</span><span class="value">${formData.severity}</span></div>
+<div class="field"><span class="label">Department</span><span class="value">${formData.department}</span></div>
+<div class="field"><span class="label">Bylaw Reference</span><span class="value">${formData.bylaw}</span></div>
+<div class="field"><span class="label">311 Notified</span><span class="value">${formData.notified311}</span></div>
+<div class="field"><span class="label">Service Request #</span><span class="value">${formData.serviceRequestNumber}</span></div>
+<h2>Incident Description</h2>
+<p style="font-size:13px;line-height:1.6">${formData.description}</p>
+</body></html>`;
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const w = window.open(url, '_blank');
+            if (w) setTimeout(() => { w.print(); URL.revokeObjectURL(url); }, 500);
+          };
+
+          const F = ({ label, value }: { label: string; value: string }) => (
+            <div className="flex items-start gap-3 py-2" style={{ borderBottom: '1px solid var(--border-hairline)' }}>
+              <div className="flex-1">
+                <p className="text-[10px] uppercase tracking-wider font-medium" style={{ color: 'var(--text-muted)' }}>{label}</p>
+                <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{value}</p>
+              </div>
+            </div>
+          );
+
+          return (
           <motion.div
             key="form-preview"
             variants={pageVariants}
@@ -1034,160 +1059,99 @@ export default function SmartReportAgent() {
             transition={{ duration: 0.4, ease: 'easeOut' }}
             className="space-y-4"
           >
-            {/* Header */}
             <div className="flex items-center gap-3 mb-2">
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{ background: 'rgba(107, 15, 26, 0.1)', border: '1px solid rgba(107, 15, 26, 0.15)' }}
-              >
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(107, 15, 26, 0.1)', border: '1px solid rgba(107, 15, 26, 0.15)' }}>
                 <FileText className="w-5 h-5" style={{ color: 'var(--accent-primary)' }} />
               </div>
               <div>
-                <p className="text-sm font-semibold tracking-wide uppercase" style={{ color: 'var(--accent-primary)', fontFamily: 'var(--font-utility)' }}>
-                  311 Service Request
-                </p>
-                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Review before filing</p>
+                <p className="text-sm font-semibold tracking-wide uppercase" style={{ color: 'var(--accent-primary)' }}>311 Pothole Report</p>
+                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Review compiled form before filing</p>
               </div>
             </div>
 
-            {/* Form card */}
-            <div
-              className="rounded-2xl overflow-hidden"
-              style={{
-                background: 'var(--palette-cream)',
-                border: '1px solid var(--border-hairline)',
-                boxShadow: 'var(--shadow-glass-md)',
-              }}
-            >
-              {/* Form header bar */}
-              <div
-                className="px-5 py-3 flex items-center justify-between"
-                style={{ background: 'var(--accent-primary)' }}
-              >
-                <span className="text-xs font-bold text-white tracking-wider uppercase">
-                  City of Waterloo — 311 Form
-                </span>
-                <span className="text-[10px] text-white/70 font-mono">
-                  {refNumber}
-                </span>
+            <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--palette-cream)', border: '1px solid var(--border-hairline)', boxShadow: 'var(--shadow-glass-md)' }}>
+              <div className="px-5 py-3 flex items-center justify-between" style={{ background: 'var(--accent-primary)' }}>
+                <span className="text-xs font-bold text-white tracking-wider uppercase">City of Toronto — 311 Pothole Claim</span>
+                <span className="text-[10px] text-white/70 font-mono">{refNumber}</span>
               </div>
 
-              {/* Image */}
               {image && (
                 <div className="px-5 pt-4">
-                  <img
-                    src={image}
-                    alt="Report photo"
-                    className="w-full h-36 object-cover rounded-xl"
-                    style={{ border: '1px solid var(--border-hairline)' }}
-                  />
+                  <img src={image} alt="Report photo" className="w-full h-36 object-cover rounded-xl" style={{ border: '1px solid var(--border-hairline)' }} />
                 </div>
               )}
 
-              {/* Form fields */}
-              <div className="px-5 py-4 space-y-3">
-                {/* Reference */}
-                <div className="flex items-start gap-3 py-2" style={{ borderBottom: '1px solid var(--border-hairline)' }}>
-                  <Hash className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
-                  <div className="flex-1">
-                    <p className="text-[10px] uppercase tracking-wider font-medium" style={{ color: 'var(--text-muted)' }}>Reference #</p>
-                    <p className="text-sm font-mono font-medium" style={{ color: 'var(--text-primary)' }}>{refNumber}</p>
-                  </div>
-                </div>
+              <div className="px-5 py-4 space-y-0">
+                <p className="text-[10px] uppercase tracking-wider font-bold mb-2" style={{ color: 'var(--accent-primary)' }}>Claim Type</p>
+                <F label="Damage/Injury Type" value={formData.damageType} />
+                <F label="Submitting on Own Behalf" value={formData.submittingOnOwnBehalf} />
 
-                {/* Department */}
-                <div className="flex items-start gap-3 py-2" style={{ borderBottom: '1px solid var(--border-hairline)' }}>
-                  <Building2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
-                  <div className="flex-1">
-                    <p className="text-[10px] uppercase tracking-wider font-medium" style={{ color: 'var(--text-muted)' }}>Department</p>
-                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{analysis.department}</p>
-                  </div>
-                </div>
+                <p className="text-[10px] uppercase tracking-wider font-bold mt-4 mb-2" style={{ color: 'var(--accent-primary)' }}>Claimant</p>
+                <F label="Involvement" value={formData.involvementType} />
+                <F label="Name" value={`${formData.firstName} ${formData.lastName}`} />
+                <F label="Email" value={formData.email} />
+                <F label="Phone" value={formData.phone} />
 
-                {/* Severity */}
-                <div className="flex items-start gap-3 py-2" style={{ borderBottom: '1px solid var(--border-hairline)' }}>
-                  <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
-                  <div className="flex-1">
-                    <p className="text-[10px] uppercase tracking-wider font-medium" style={{ color: 'var(--text-muted)' }}>Priority</p>
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase ${SEVERITY_CHIP[analysis.severity]}`}>
-                      {analysis.severity}
-                    </span>
-                  </div>
-                </div>
+                <p className="text-[10px] uppercase tracking-wider font-bold mt-4 mb-2" style={{ color: 'var(--accent-primary)' }}>Incident Details</p>
+                <F label="Date of Loss" value={formData.dateOfLoss} />
+                <F label="On Highway?" value={formData.highway} />
+                <F label="Address" value={formData.incidentAddress} />
+                <F label="City / Province" value={`${formData.incidentCity}, ${formData.incidentProvince}`} />
+                <F label="Postal Code" value={formData.incidentPostalCode} />
+                <F label="Cause" value={formData.cause} />
+                <F label="Source" value={formData.source} />
+                <F label="Severity" value={formData.severity} />
+                <F label="Department" value={formData.department} />
+                <F label="Bylaw Reference" value={formData.bylaw} />
+                <F label="311 Service Request #" value={formData.serviceRequestNumber} />
 
-                {/* Location */}
-                <div className="flex items-start gap-3 py-2" style={{ borderBottom: '1px solid var(--border-hairline)' }}>
-                  <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
-                  <div className="flex-1">
-                    <p className="text-[10px] uppercase tracking-wider font-medium" style={{ color: 'var(--text-muted)' }}>Location</p>
-                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{address}</p>
-                  </div>
-                </div>
-
-                {/* Bylaw */}
-                <div className="flex items-start gap-3 py-2" style={{ borderBottom: '1px solid var(--border-hairline)' }}>
-                  <Scale className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
-                  <div className="flex-1">
-                    <p className="text-[10px] uppercase tracking-wider font-medium" style={{ color: 'var(--text-muted)' }}>Applicable Regulation</p>
-                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{analysis.bylaw_reference}</p>
-                  </div>
-                </div>
-
-                {/* Description */}
-                <div className="flex items-start gap-3 py-2" style={{ borderBottom: '1px solid var(--border-hairline)' }}>
-                  <FileText className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
-                  <div className="flex-1">
-                    <p className="text-[10px] uppercase tracking-wider font-medium" style={{ color: 'var(--text-muted)' }}>Description</p>
-                    <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>{analysis.technical_description}</p>
-                  </div>
-                </div>
-
-                {/* Timestamp */}
-                <div className="flex items-start gap-3 py-2">
-                  <Clock className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
-                  <div className="flex-1">
-                    <p className="text-[10px] uppercase tracking-wider font-medium" style={{ color: 'var(--text-muted)' }}>Submitted</p>
-                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                      {new Date().toLocaleString('en-CA', { dateStyle: 'long', timeStyle: 'short' })}
-                    </p>
-                  </div>
-                </div>
+                <p className="text-[10px] uppercase tracking-wider font-bold mt-4 mb-2" style={{ color: 'var(--accent-primary)' }}>Description</p>
+                <p className="text-sm leading-relaxed pb-2" style={{ color: 'var(--text-primary)' }}>{formData.description}</p>
               </div>
 
-              {/* Status bar */}
-              <div
-                className="px-5 py-3 flex items-center gap-2"
-                style={{ background: 'rgba(22, 163, 74, 0.08)', borderTop: '1px solid rgba(22, 163, 74, 0.15)' }}
-              >
+              <div className="px-5 py-3 flex items-center gap-2" style={{ background: 'rgba(22, 163, 74, 0.08)', borderTop: '1px solid rgba(22, 163, 74, 0.15)' }}>
                 <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span className="text-xs font-semibold text-green-700">Report Verified &amp; Ready to File</span>
+                <span className="text-xs font-semibold text-green-700">All fields compiled &amp; ready to file</span>
               </div>
             </div>
 
-            {/* File button */}
+            {/* Download PDF */}
             <button
-              onClick={() => setStep('filing')}
-              className="w-full py-3.5 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all"
-              style={{
-                background: 'var(--accent-primary)',
-                boxShadow: '0 4px 12px rgba(107, 15, 26, 0.2)',
+              onClick={downloadPDF}
+              className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all"
+              style={{ background: 'var(--palette-cream)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-hover)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--palette-cream)'; }}
+            >
+              <Download className="w-4 h-4" />
+              Download Report as PDF
+            </button>
+
+            {/* Submit — car animation then redirect */}
+            <button
+              onClick={() => {
+                setStep('filing');
               }}
+              className="w-full py-3.5 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all"
+              style={{ background: 'var(--accent-primary)', boxShadow: '0 4px 12px rgba(107, 15, 26, 0.2)' }}
               onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--accent-hover)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--accent-primary)'; }}
             >
               <Send className="w-4 h-4" />
-              File to Waterloo City Hall
+              Submit to City of Toronto 311
               <ArrowRight className="w-4 h-4" />
             </button>
           </motion.div>
-        )}
+          );
+        })()}
 
         {/* ─────────── STEP 5: FILING ANIMATION ─────────── */}
         {step === 'filing' && (
           <ReportJourney
             reportLocation={userLocation}
-            reportType="311 Service Request"
+            reportType="311 Pothole Report"
             onComplete={() => {
+              window.open('https://www.toronto.ca/home/311-toronto-at-your-service/create-a-service-request/service-request/?request=0VS6g000000DzbXGAS', '_blank');
               router.push('/dashboard');
             }}
             isVisible={true}

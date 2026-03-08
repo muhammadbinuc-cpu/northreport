@@ -1,3 +1,14 @@
+// Shared AudioContext — reuse across calls to avoid repeated permission prompts.
+// Created lazily on first use; browsers allow creation but may start it suspended.
+let sharedCtx: AudioContext | null = null;
+
+function getAudioContext(): AudioContext {
+  if (!sharedCtx || sharedCtx.state === 'closed') {
+    sharedCtx = new AudioContext();
+  }
+  return sharedCtx;
+}
+
 export async function speak(text: string): Promise<void> {
   try {
     const res = await fetch('/api/tts', {
@@ -14,24 +25,22 @@ export async function speak(text: string): Promise<void> {
     const arrayBuffer = await res.arrayBuffer();
     if (arrayBuffer.byteLength < 100) throw new Error('Audio too small');
 
-    // Use AudioContext to decode — works regardless of MIME type quirks
-    const audioCtx = new AudioContext();
+    const audioCtx = getAudioContext();
+
+    // Resume if browser suspended it (autoplay policy)
+    if (audioCtx.state === 'suspended') {
+      await audioCtx.resume();
+    }
+
     const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
     const source = audioCtx.createBufferSource();
     source.buffer = audioBuffer;
     source.connect(audioCtx.destination);
 
     await new Promise<void>((resolve) => {
-      source.onended = () => {
-        audioCtx.close().catch(() => {});
-        resolve();
-      };
+      source.onended = () => resolve();
       source.start();
-      // Safety timeout
-      setTimeout(() => {
-        audioCtx.close().catch(() => {});
-        resolve();
-      }, 15000);
+      setTimeout(() => resolve(), 15000);
     });
   } catch {
     // Fallback to browser TTS
