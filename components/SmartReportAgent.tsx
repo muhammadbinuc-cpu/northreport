@@ -552,13 +552,59 @@ export default function SmartReportAgent() {
     }
   };
 
-  /* ── Submit Report (hardcoded for testing) ── */
+  /* ── Submit Report ── */
   const handleFile = async () => {
     if (!analysis) return;
     setFilingLoading(true);
-    // Hardcoded Toronto location — skip API call for testing
-    setUserLocation({ lat: 43.6629, lng: -79.3957 });
-    setReportId(refNumber);
+
+    // Get current location
+    let lat = userLocation.lat;
+    let lng = userLocation.lng;
+    try {
+      const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })
+      );
+      lat = pos.coords.latitude;
+      lng = pos.coords.longitude;
+      setUserLocation({ lat, lng });
+    } catch {
+      // Keep default if geolocation fails
+    }
+
+    // Save draft to Firestore (skip large image to avoid payload errors)
+    try {
+      // Only include image if it's under 500KB base64
+      let imgPayload: string | undefined;
+      if (image) {
+        const raw = image.includes(',') ? image.split(',')[1] : image;
+        if (raw.length < 500_000) imgPayload = image;
+      }
+
+      const res = await fetch('/api/reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          description: analysis.technical_description,
+          latitude: lat,
+          longitude: lng,
+          imageBase64: imgPayload,
+          category: analysis.department,
+          neighborhood: 'downtown-waterloo',
+          status: 'draft',
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setReportId(data.id || refNumber);
+      } else {
+        console.warn('[SmartReport] Draft save failed:', res.status);
+        setReportId(refNumber);
+      }
+    } catch (err) {
+      console.warn('[SmartReport] Draft save error:', err);
+      setReportId(refNumber);
+    }
+
     setFilingLoading(false);
     setStep('form-preview');
   };
@@ -1219,7 +1265,7 @@ export default function SmartReportAgent() {
             dateOfLoss: dateStr,
             highway: 'No',
             incidentAddress: address,
-            incidentCity: 'Toronto',
+            incidentCity: 'Waterloo',
             incidentProvince: 'Ontario',
             incidentCountry: 'Canada',
             incidentPostalCode: 'M5H 2N2',
@@ -1241,8 +1287,9 @@ h2{font-size:14px;color:#6B0F1A;margin-top:24px;text-transform:uppercase;letter-
 .field{display:flex;padding:6px 0;border-bottom:1px solid #eee}.label{width:200px;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.5px}.value{flex:1;font-size:13px}
 .header{text-align:center;margin-bottom:20px}.header p{color:#888;font-size:12px}
 .badge{display:inline-block;padding:2px 10px;border-radius:4px;font-size:11px;font-weight:bold;text-transform:uppercase;background:#fef3c7;color:#92400e}
+@media print{body{padding:20px}@page{margin:1cm}}
 </style></head><body>
-<div class="header"><h1>City of Waterloo — 311 Service Request</h1><p>Reference: ${refNumber} | Generated: ${dateStr} ${timeStr}</p></div>
+<div class="header"><h1>City of Waterloo &mdash; 311 Service Request</h1><p>Reference: ${refNumber} | Generated: ${dateStr} ${timeStr}</p></div>
 <h2>Claim Type</h2>
 <div class="field"><span class="label">Damage/Injury Type</span><span class="value">${formData.damageType}</span></div>
 <div class="field"><span class="label">Submitting on Own Behalf</span><span class="value">${formData.submittingOnOwnBehalf}</span></div>
@@ -1271,8 +1318,13 @@ h2{font-size:14px;color:#6B0F1A;margin-top:24px;text-transform:uppercase;letter-
 </body></html>`;
             const blob = new Blob([html], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
-            const w = window.open(url, '_blank');
-            if (w) setTimeout(() => { w.print(); URL.revokeObjectURL(url); }, 500);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `311-Report-${refNumber}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
           };
 
           const F = ({ label, value }: { label: string; value: string }) => (
@@ -1306,7 +1358,7 @@ h2{font-size:14px;color:#6B0F1A;margin-top:24px;text-transform:uppercase;letter-
 
             <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--palette-cream)', border: '1px solid var(--border-hairline)', boxShadow: 'var(--shadow-glass-md)' }}>
               <div className="px-5 py-3 flex items-center justify-between" style={{ background: 'var(--accent-primary)' }}>
-                <span className="text-xs font-bold text-white tracking-wider uppercase">City of Toronto — 311 Pothole Claim</span>
+                <span className="text-xs font-bold text-white tracking-wider uppercase">City of Waterloo — 311 Pothole Claim</span>
                 <span className="text-[10px] text-white/70 font-mono">{refNumber}</span>
               </div>
 
@@ -1373,7 +1425,7 @@ h2{font-size:14px;color:#6B0F1A;margin-top:24px;text-transform:uppercase;letter-
               onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--accent-primary)'; }}
             >
               <Send className="w-4 h-4" />
-              Submit to City of Toronto 311
+              Submit to City of Waterloo 311
               <ArrowRight className="w-4 h-4" />
             </button>
           </motion.div>
@@ -1386,7 +1438,7 @@ h2{font-size:14px;color:#6B0F1A;margin-top:24px;text-transform:uppercase;letter-
             reportLocation={userLocation}
             reportType="311 Pothole Report"
             onComplete={() => {
-              window.open('https://www.toronto.ca/home/311-toronto-at-your-service/create-a-service-request/service-request/?request=0VS6g000000DzbXGAS', '_blank');
+              window.open('https://forms.waterloo.ca/Website/Report-an-issue?_gl=1*1okku68*_ga*Mzg0NjcyMTk1LjE3NzI5MzQwNTg.*_ga_F03DWSJDKM*czE3NzI5MzkzNDgkbzIkZzEkdDE3NzI5MzkzNTIkajU2JGwwJGgw', '_blank');
               router.push('/dashboard');
             }}
             isVisible={true}

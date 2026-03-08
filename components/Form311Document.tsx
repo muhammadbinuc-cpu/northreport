@@ -99,8 +99,8 @@ export default function Form311Document({ draft, editedDescription }: Form311Doc
                 <div className="bg-gray-800 text-white px-6 py-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 className="text-lg font-bold tracking-wide">CITY OF HAMILTON</h2>
-                            <p className="text-gray-300 text-sm">Municipal Service Request — {requestType}</p>
+                            <h2 className="text-lg font-bold tracking-wide">CITY OF WATERLOO</h2>
+                            <p className="text-gray-300 text-sm">311 Service Request — {requestType}</p>
                         </div>
                         <div className="text-right text-xs text-gray-400">
                             <div>Reference</div>
@@ -195,7 +195,7 @@ export default function Form311Document({ draft, editedDescription }: Form311Doc
 
                 {/* Footer */}
                 <div className="bg-gray-800 text-gray-400 px-6 py-3 text-xs text-center">
-                    City of Waterloo | 905-546-CITY (2489) | hamilton.ca | 311 Service
+                    City of Waterloo | 519-886-1550 | waterloo.ca | 311 Service
                 </div>
 
             </div>

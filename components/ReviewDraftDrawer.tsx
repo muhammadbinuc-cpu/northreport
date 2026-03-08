@@ -269,7 +269,7 @@ export default function ReviewDraftDrawer({ draft, onClose, onFileComplete }: Re
                             {/* Primary Action */}
                             <button
                                 onClick={handlePreview311}
-                                className="w-full py-3 rounded-xl bg-gradient-to-r from-crimson to-crimson-dark text-white font-medium text-sm flex items-center justify-center gap-2 hover:brightness-110 transition-all shadow-lg shadow-crimson/20"
+                                className="w-full py-3 rounded-xl bg-gradient-to-r from-crimson to-crimson-dark text-black font-medium text-sm flex items-center justify-center gap-2 hover:brightness-110 transition-all shadow-lg shadow-crimson/20"
                             >
                                 <Eye className="w-4 h-4" />
                                 Preview 311 Form

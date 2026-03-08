@@ -10,7 +10,7 @@ import { mergePatterns } from '@/lib/mergePatterns';
 type PageStatus = 'IDLE' | 'LOADING' | 'DETECTING' | 'EMPTY' | 'READY' | 'ERROR';
 
 export default function PatternsPage() {
-  const [neighborhood, setNeighborhood] = useState('downtown-hamilton');
+  const [neighborhood, setNeighborhood] = useState('downtown-waterloo');
   const [patterns, setPatterns] = useState<any[]>([]);
   const [status, setStatus] = useState<PageStatus>('LOADING');
   const [hasRun, setHasRun] = useState(false);

@@ -81,7 +81,7 @@ export default function ReportForm() {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('infrastructure');
   const [severity, setSeverity] = useState('medium');
-  const [neighborhood, setNeighborhood] = useState('downtown-hamilton');
+  const [neighborhood, setNeighborhood] = useState('downtown-waterloo');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');

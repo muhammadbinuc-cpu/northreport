@@ -139,7 +139,7 @@ export default function GeminiScanner() {
         body: JSON.stringify({
           description,
           category: 'infrastructure',
-          neighborhood: 'downtown-hamilton',
+          neighborhood: 'downtown-waterloo',
           latitude,
           longitude,
           imageBase64: imagePreview,

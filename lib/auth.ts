@@ -21,7 +21,7 @@ export async function requireAuth(): Promise<{ userId: string; role: string; nei
     // Auto-create user on first login
     const newUser = {
       role: 'resident',
-      neighborhood: 'downtown-hamilton',
+      neighborhood: 'downtown-waterloo',
       displayName: session.user.name || session.user.email || 'Anonymous',
       email: session.user.email || '',
       avatarUrl: session.user.picture || null,
@@ -34,7 +34,7 @@ export async function requireAuth(): Promise<{ userId: string; role: string; nei
     return {
       userId: sub,
       role: 'resident',
-      neighborhood: 'downtown-hamilton',
+      neighborhood: 'downtown-waterloo',
     };
   }
 
@@ -42,7 +42,7 @@ export async function requireAuth(): Promise<{ userId: string; role: string; nei
   return {
     userId: sub,
     role: user.role || 'resident',
-    neighborhood: user.neighborhood || 'downtown-hamilton',
+    neighborhood: user.neighborhood || 'downtown-waterloo',
   };
 }
 
