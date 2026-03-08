@@ -1,132 +1,127 @@
-'use client';
+"use client";
 
-import type { ReactNode } from 'react';
-import { motion, useTransform, type MotionValue } from 'framer-motion';
+import { useRef, useState, useEffect } from "react";
+import { motion, useInView, useScroll, useTransform, useSpring } from "framer-motion";
 
-interface StepDef {
-  title: string;
-  description: string;
-  icon: ReactNode;
-}
-
-const steps: StepDef[] = [
+const STEPS = [
   {
-    title: 'Speak',
-    description: 'Record what you see. NorthReport AI classifies it instantly.',
-    icon: (
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#14b8a6" strokeWidth="2" strokeLinecap="round">
-        <rect x="14" y="6" width="12" height="20" rx="6" />
-        <path d="M10 22 a10 10 0 0 0 20 0" />
-        <line x1="20" y1="32" x2="20" y2="36" />
-        <line x1="14" y1="36" x2="26" y2="36" />
-        <path d="M30 14 Q34 20 30 26" opacity="0.5" />
-        <path d="M33 11 Q38 20 33 29" opacity="0.3" />
-      </svg>
-    ),
+    num: "01",
+    title: "Report",
+    description: "Spot an issue? Report it in seconds with voice, photo, or text.",
   },
   {
-    title: 'See Patterns',
-    description: 'AI detects clusters, trends, and emerging hazards across your neighborhood.',
-    icon: (
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#14b8a6" strokeWidth="2" strokeLinecap="round">
-        <circle cx="10" cy="14" r="4" />
-        <circle cx="30" cy="10" r="4" />
-        <circle cx="20" cy="30" r="4" />
-        <circle cx="34" cy="28" r="3" />
-        <line x1="14" y1="14" x2="26" y2="10" opacity="0.5" />
-        <line x1="10" y1="18" x2="18" y2="27" opacity="0.5" />
-        <line x1="24" y1="30" x2="31" y2="28" opacity="0.5" />
-        <line x1="30" y1="14" x2="33" y2="25" opacity="0.5" />
-      </svg>
-    ),
+    num: "02",
+    title: "AI Analysis",
+    description: "Gemini AI categorizes, prioritizes, and routes your report automatically.",
   },
   {
-    title: 'Take Action',
-    description: 'Auto-file 311 reports. Alert community leaders. Get results.',
-    icon: (
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#14b8a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M34 8 L16 26 L8 18" />
-        <rect x="4" y="4" width="32" height="32" rx="4" />
-        <path d="M28 20 L28 32 L4 32 L4 8 L18 8" opacity="0.4" />
-      </svg>
-    ),
+    num: "03",
+    title: "Action",
+    description: "Your city responds. Track real-time progress on every report.",
   },
 ];
 
-function StepCard({
-  step,
-  index,
-  progress,
-}: {
-  step: StepDef;
-  index: number;
-  progress: MotionValue<number>;
-}) {
-  const cardStart = 0.15 + index * 0.2;
-  const opacity = useTransform(progress, [cardStart, cardStart + 0.18], [0, 1]);
-  const y = useTransform(progress, [cardStart, cardStart + 0.18], [60, 0]);
+const stepVariants = {
+  hidden: { opacity: 0, y: 30 },
+  show: { opacity: 1, y: 0 },
+};
 
-  return (
-    <motion.div
-      className="rounded-2xl p-6 flex flex-col items-center text-center gap-4"
-      style={{
-        opacity,
-        y,
-        background: 'rgba(255,255,255,0.04)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        border: '1px solid rgba(255,255,255,0.08)',
-      }}
-    >
-      <div
-        className="w-16 h-16 rounded-full flex items-center justify-center"
-        style={{
-          background: 'rgba(20,184,166,0.1)',
-          border: '1px solid rgba(20,184,166,0.2)',
-        }}
-      >
-        {step.icon}
-      </div>
-      <h3 className="text-lg font-semibold text-teal-400">{step.title}</h3>
-      <p className="text-sm text-[#94a3b8] leading-relaxed">{step.description}</p>
-    </motion.div>
-  );
+function AnimatedNumber({ target, active }: { target: string; active: boolean }) {
+  const [display, setDisplay] = useState("00");
+
+  useEffect(() => {
+    if (!active) return;
+    const targetNum = parseInt(target);
+    let current = 0;
+    const timer = setInterval(() => {
+      current++;
+      setDisplay(String(current).padStart(2, "0"));
+      if (current >= targetNum) clearInterval(timer);
+    }, 100);
+    return () => clearInterval(timer);
+  }, [active, target]);
+
+  return <>{display}</>;
 }
 
-export default function HowItWorks({
-  scrollY,
-}: {
-  scrollY: MotionValue<number>;
-}) {
-  const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
-  const sectionStart = vh * 3.8;
-  const sectionLength = vh * 1.0;
+export default function HowItWorks() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-80px 0px" });
 
-  const progress = useTransform(
-    scrollY,
-    [sectionStart, sectionStart + sectionLength],
-    [0, 1]
-  );
-
-  const titleOpacity = useTransform(progress, [0, 0.15], [0, 1]);
-  const titleY = useTransform(progress, [0, 0.15], [30, 0]);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start 0.85", "center center"],
+  });
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 60, damping: 25 });
+  const lineScaleX = useTransform(smoothProgress, [0, 1], [0, 1]);
 
   return (
-    <div className="fixed inset-0 z-10 pointer-events-none flex items-center justify-center">
-      <div className="w-full max-w-4xl px-6">
+    <section className="py-28 px-6" style={{ background: "#faf7ed" }}>
+      <div className="max-w-5xl mx-auto">
         <motion.h2
-          className="text-2xl md:text-3xl font-bold text-center mb-10 text-[#e2e8f0]"
-          style={{ opacity: titleOpacity, y: titleY }}
+          className="text-4xl md:text-5xl font-bold text-center mb-20"
+          style={{ color: "#1e1e1e", fontFamily: "var(--font-playfair)" }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.6 }}
         >
-          How It Works
+          How NorthReport Works
         </motion.h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {steps.map((step, i) => (
-            <StepCard key={i} step={step} index={i} progress={progress} />
-          ))}
+        <div className="relative" ref={sectionRef}>
+          <div
+            className="hidden md:block absolute top-10 left-[calc(16.66%+2rem)] right-[calc(16.66%+2rem)] h-0.5"
+            style={{ background: "rgba(107,15,26,0.15)" }}
+          >
+            <motion.div
+              className="h-full origin-left"
+              style={{ background: "#6b0f1a", scaleX: lineScaleX }}
+            />
+          </div>
+
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8"
+            initial="hidden"
+            animate={isInView ? "show" : "hidden"}
+            transition={{ staggerChildren: 0.2, delayChildren: 0.1 }}
+          >
+            {STEPS.map((step) => (
+              <motion.div
+                key={step.num}
+                variants={stepVariants}
+                transition={{ duration: 0.6 }}
+                className="flex flex-col items-center md:items-start text-center md:text-left"
+              >
+                <div
+                  className="w-20 h-20 rounded-full flex items-center justify-center mb-6 relative z-10"
+                  style={{ background: "#faf7ed", border: "2px solid rgba(107,15,26,0.15)" }}
+                >
+                  <span
+                    className="font-bold"
+                    style={{ color: "#6b0f1a", fontSize: "1.6rem", lineHeight: 1, fontFamily: "var(--font-playfair)" }}
+                  >
+                    <AnimatedNumber target={step.num} active={isInView} />
+                  </span>
+                </div>
+
+                <h3
+                  className="text-2xl font-bold mb-3"
+                  style={{ color: "#1e1e1e", fontFamily: "var(--font-playfair)" }}
+                >
+                  {step.title}
+                </h3>
+                <p
+                  className="text-base leading-relaxed"
+                  style={{ color: "#555", fontFamily: "var(--font-utility)" }}
+                >
+                  {step.description}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

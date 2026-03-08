@@ -81,7 +81,7 @@ export default function Phone3D({ scrollProgress, screen }: Phone3DProps) {
     );
 }
 
-// Feed Screen - Shows community feed UI
+// Feed Screen - Shows pulse feed UI
 function FeedScreen({ scrollProgress }: { scrollProgress: MotionValue<number> }) {
     const feedScrollY = useTransform(scrollProgress, [0.25, 0.45], [0, -200]);
 
@@ -195,7 +195,7 @@ function FeedCard({
 }) {
     const colors = {
         hazard: { bg: "rgba(245,158,11,0.1)", border: "rgba(245,158,11,0.2)", icon: "#f59e0b" },
-        story: { bg: "rgba(139,26,43,0.1)", border: "rgba(139,26,43,0.2)", icon: "#8b1a2b" },
+        story: { bg: "rgba(99,102,241,0.1)", border: "rgba(99,102,241,0.2)", icon: "#6366f1" },
         alert: { bg: "rgba(239,68,68,0.1)", border: "rgba(239,68,68,0.2)", icon: "#ef4444" },
     };
 
@@ -261,7 +261,7 @@ function FeedCard({
             </div>
             {hasMedia && (
                 <div className="mt-2 h-24 rounded-lg bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8b1a2b" strokeWidth="2">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2">
                         <polygon points="5 3 19 12 5 21 5 3" />
                     </svg>
                 </div>
