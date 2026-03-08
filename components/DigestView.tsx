@@ -9,7 +9,7 @@ function parseMarkdown(markdown: string): string {
   let html = markdown;
 
   html = html.replace(/^### (.*)$/gm, '<h3 class="text-base font-semibold mt-4 mb-2">$1</h3>');
-  html = html.replace(/^## (.*)$/gm, '<h2 class="text-lg font-semibold mt-5 mb-2 text-[#a78bfa]">$1</h2>');
+  html = html.replace(/^## (.*)$/gm, '<h2 class="text-lg font-semibold mt-5 mb-2 text-[#8b1a2b]">$1</h2>');
   html = html.replace(/^# (.*)$/gm, '<h1 class="text-xl font-bold mt-4 mb-3">$1</h1>');
 
   html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
@@ -76,15 +76,15 @@ const DigestEmptyState = ({ neighborhood }: { neighborhood: string }) => {
   return (
     <div className="flex flex-col items-center py-12 w-full space-y-12 animate-in fade-in slide-in-from-bottom-4">
       {/* Monitoring indicator */}
-      <div className="flex items-center space-x-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
-        <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
+      <div className="flex items-center space-x-2 px-4 py-1.5 rounded-full bg-crimson/10 border border-crimson/20 text-crimson-light">
+        <div className="w-2 h-2 bg-crimson rounded-full animate-pulse" />
         <span className="text-xs font-bold uppercase tracking-widest">Monitoring for community activity...</span>
       </div>
 
       {/* Main card */}
       <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-10 text-center shadow-2xl max-w-lg">
-        <div className="bg-indigo-600/20 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6">
-          <Shield className="w-8 h-8 text-indigo-500" />
+        <div className="bg-crimson-dark/20 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <Shield className="w-8 h-8 text-crimson" />
         </div>
         <h2 className="text-2xl font-bold text-white mb-3">No safety reports yet for {label}</h2>
         <p className="text-gray-400 text-sm mb-8 leading-relaxed">
@@ -93,7 +93,7 @@ const DigestEmptyState = ({ neighborhood }: { neighborhood: string }) => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             href="/report"
-            className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-bold transition-all flex items-center justify-center"
+            className="px-6 py-3 bg-crimson-dark hover:bg-crimson text-white rounded-xl text-sm font-bold transition-all flex items-center justify-center"
           >
             <Plus className="w-4 h-4 mr-2" /> Create First Report
           </Link>
@@ -160,7 +160,7 @@ export default function DigestView({ neighborhood }: { neighborhood: string }) {
         <button
           onClick={generateDigest}
           disabled={status === 'LOADING'}
-          className="px-4 py-2 bg-[#6366f1] hover:bg-[#5558e6] rounded-lg text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          className="px-4 py-2 bg-[#8b1a2b] hover:bg-[#7a0f1e] rounded-lg text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           {status === 'LOADING' && (
             <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
@@ -182,8 +182,8 @@ export default function DigestView({ neighborhood }: { neighborhood: string }) {
       {status === 'LOADING' && (
         <div className="glass-card p-8 text-center animate-pulse">
           <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-2 border-[#6366f1] border-t-transparent rounded-full animate-spin" />
-            <p className="text-[#a78bfa] font-medium">Generating your digest...</p>
+            <div className="w-8 h-8 border-2 border-[#8b1a2b] border-t-transparent rounded-full animate-spin" />
+            <p className="text-[#8b1a2b] font-medium">Generating your digest...</p>
             <p className="text-xs text-[#888]">This may take a few seconds</p>
           </div>
         </div>

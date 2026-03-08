@@ -22,7 +22,7 @@ export default function ConfirmChip({ prompt, onConfirm, onCancel }: ConfirmChip
             setLoading(false);
           }}
           disabled={loading}
-          className="px-4 py-2 bg-[#6366f1] hover:bg-[#5558e6] rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+          className="px-4 py-2 bg-[#8b1a2b] hover:bg-[#7a0f1e] rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
         >
           {loading ? 'Processing...' : 'Confirm'}
         </button>

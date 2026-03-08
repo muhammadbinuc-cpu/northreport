@@ -19,7 +19,7 @@ export default function Mock311Page() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-white text-black flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--bg-base)] text-black flex items-center justify-center">
         <div className="max-w-md text-center space-y-4 p-8">
           <div className="text-6xl">✅</div>
           <h1 className="text-2xl font-bold">Thank You!</h1>
@@ -37,9 +37,9 @@ export default function Mock311Page() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-black">
+    <div className="min-h-screen bg-[var(--bg-base)] text-black">
       <header className="bg-blue-800 text-white px-6 py-4">
-        <h1 className="text-xl font-bold">City of Hamilton — 311 Service Request</h1>
+        <h1 className="text-xl font-bold">City of Waterloo — 311 Service Request</h1>
         <p className="text-sm text-blue-200">Report a non-emergency issue</p>
       </header>
 
@@ -78,7 +78,7 @@ export default function Mock311Page() {
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              placeholder="e.g., King St & James St, Hamilton"
+              placeholder="e.g., University Ave & King St, Waterloo"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
               required
             />

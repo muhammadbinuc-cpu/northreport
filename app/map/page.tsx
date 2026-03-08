@@ -24,9 +24,10 @@ function MapPageInner() {
   const searchParams = useSearchParams();
   const locationQuery = searchParams.get('location');
 
-  const [neighborhood, setNeighborhood] = useState('downtown-hamilton');
+  const [neighborhood, setNeighborhood] = useState('downtown-waterloo');
   const [criticalCount, setCriticalCount] = useState(0);
   const [hotspots, setHotspots] = useState<Hotspot[]>([]);
+  const [reports, setReports] = useState<any[]>([]);
   const [flyToLocation, setFlyToLocation] = useState<[number, number] | null>(null);
 
   useEffect(() => {
@@ -44,23 +45,30 @@ function MapPageInner() {
     if (user) loadUser();
   }, [user]);
 
-  // Fetch hotspots and critical count
+  // Fetch hotspots, reports, and critical count
   useEffect(() => {
-    async function fetchHotspots() {
+    async function fetchData() {
       try {
-        const res = await fetch(`/api/hotspots?neighborhood=${neighborhood}`);
-        if (res.ok) {
-          const data = await res.json();
+        const [hotspotsRes, reportsRes] = await Promise.all([
+          fetch(`/api/hotspots?neighborhood=${neighborhood}`),
+          fetch(`/api/reports?neighborhood=${neighborhood}&limit=50`),
+        ]);
+        if (hotspotsRes.ok) {
+          const data = await hotspotsRes.json();
           const fetchedHotspots = data.hotspots || [];
           setHotspots(fetchedHotspots);
           const critical = fetchedHotspots.filter((h: Hotspot) => h.topSeverity === 'critical')?.length || 0;
           setCriticalCount(critical);
         }
+        if (reportsRes.ok) {
+          const data = await reportsRes.json();
+          setReports(data.reports || []);
+        }
       } catch {
         // ignore
       }
     }
-    fetchHotspots();
+    fetchData();
   }, [neighborhood]);
 
   // When location query param or hotspots change, find matching hotspot and fly to it
@@ -84,7 +92,7 @@ function MapPageInner() {
     <AppShell>
       <div className="flex flex-col h-screen">
         <TopBar
-          title="Live City Map"
+          title="City Heatmap"
           neighborhood={neighborhood}
           onNeighborhoodChange={setNeighborhood}
           showSearch={true}
@@ -92,7 +100,7 @@ function MapPageInner() {
         />
 
         <main className="flex-1 relative">
-          <Map3D neighborhood={neighborhood} flyToLocation={flyToLocation} />
+          <Map3D neighborhood={neighborhood} flyToLocation={flyToLocation} reports={reports} />
         </main>
       </div>
     </AppShell>

@@ -16,14 +16,24 @@ interface Hotspot {
     recentItems: Array<{ id: string; source: string; caption: string; severity: string; type: string }>;
 }
 
+interface Report {
+    id: string;
+    description: string;
+    category: string;
+    severity: string;
+    locationApprox?: { lat: number; lng: number; label?: string };
+    createdAt?: string;
+}
+
 interface Map3DProps {
     neighborhood: string;
     onHotspotSelect?: (hotspot: Hotspot | null) => void;
     flyToLocation?: [number, number] | null;
+    reports?: Report[];
 }
 
-// Toronto fallback
-const TORONTO_CENTER: [number, number] = [-79.3832, 43.6532];
+// Waterloo center
+const WATERLOO_CENTER: [number, number] = [-80.5204, 43.4643];
 
 const SEVERITY_COLORS: Record<string, string> = {
     critical: '#ff3b3b',
@@ -32,7 +42,7 @@ const SEVERITY_COLORS: Record<string, string> = {
     low: '#00d4aa',
 };
 
-export default function Map3D({ neighborhood, onHotspotSelect, flyToLocation }: Map3DProps) {
+export default function Map3D({ neighborhood, onHotspotSelect, flyToLocation, reports = [] }: Map3DProps) {
     const mapContainer = useRef<HTMLDivElement>(null);
     const map = useRef<mapboxgl.Map | null>(null);
     const userMarker = useRef<mapboxgl.Marker | null>(null);
@@ -52,12 +62,12 @@ export default function Map3D({ neighborhood, onHotspotSelect, flyToLocation }: 
                 },
                 () => {
                     // Fallback to Toronto on error/denial
-                    setUserLocation(TORONTO_CENTER);
+                    setUserLocation(WATERLOO_CENTER);
                 },
                 { enableHighAccuracy: true, timeout: 10000 }
             );
         } else {
-            setUserLocation(TORONTO_CENTER);
+            setUserLocation(WATERLOO_CENTER);
         }
     }, []);
 
@@ -271,6 +281,77 @@ export default function Map3D({ neighborhood, onHotspotSelect, flyToLocation }: 
         }
     }, [hotspots, onHotspotSelect]);
 
+    // Add report markers
+    const reportMarkers = useRef<mapboxgl.Marker[]>([]);
+    useEffect(() => {
+        if (!map.current) return;
+
+        // Clear old markers
+        reportMarkers.current.forEach(m => m.remove());
+        reportMarkers.current = [];
+
+        const addReportMarkers = () => {
+            if (!map.current) return;
+
+            reports.forEach((report) => {
+                // Extract coordinates: prefer locationApprox.lat/lng, fall back to GeoJSON location.coordinates
+                let lng: number | undefined;
+                let lat: number | undefined;
+                if (report.locationApprox?.lat && report.locationApprox?.lng) {
+                    lat = report.locationApprox.lat;
+                    lng = report.locationApprox.lng;
+                } else if (report.location?.coordinates?.length === 2) {
+                    lng = report.location.coordinates[0];
+                    lat = report.location.coordinates[1];
+                }
+                if (!lat || !lng) return;
+
+                const color = SEVERITY_COLORS[report.severity] || SEVERITY_COLORS.low;
+
+                const el = document.createElement('div');
+                el.style.cssText = `
+                    width: 14px; height: 14px;
+                    background: ${color};
+                    border: 2px solid white;
+                    border-radius: 50%;
+                    box-shadow: 0 0 8px ${color}80;
+                    cursor: pointer;
+                `;
+
+                const popup = new mapboxgl.Popup({ offset: 12, closeButton: false, maxWidth: '220px' })
+                    .setHTML(`
+                        <div style="font-family: Halant, Georgia, serif; padding: 4px 0;">
+                            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: ${color}; margin-bottom: 4px;">
+                                ${report.severity} · ${report.category || 'General'}
+                            </div>
+                            <div style="font-size: 13px; color: #1E1E1E; line-height: 1.4;">
+                                ${report.description?.substring(0, 120) || 'No description'}${(report.description?.length || 0) > 120 ? '...' : ''}
+                            </div>
+                            ${report.locationApprox?.label ? `<div style="font-size: 11px; color: #888; margin-top: 4px;">${report.locationApprox.label}</div>` : ''}
+                        </div>
+                    `);
+
+                const marker = new mapboxgl.Marker({ element: el })
+                    .setLngLat([lng, lat])
+                    .setPopup(popup)
+                    .addTo(map.current!);
+
+                reportMarkers.current.push(marker);
+            });
+        };
+
+        if (map.current.isStyleLoaded()) {
+            addReportMarkers();
+        } else {
+            map.current.once('style.load', addReportMarkers);
+        }
+
+        return () => {
+            reportMarkers.current.forEach(m => m.remove());
+            reportMarkers.current = [];
+        };
+    }, [reports]);
+
     // Fly to location
     useEffect(() => {
         if (!map.current || !flyToLocation) return;
@@ -309,7 +390,7 @@ export default function Map3D({ neighborhood, onHotspotSelect, flyToLocation }: 
             <div
                 className="pointer-events-none absolute inset-0 z-10"
                 style={{
-                    boxShadow: 'inset 0 0 100px 50px rgba(10, 14, 20, 0.6), inset 0 0 200px 100px rgba(34, 211, 238, 0.05)',
+                    boxShadow: 'inset 0 0 100px 50px rgba(10, 14, 20, 0.6), inset 0 0 200px 100px rgba(139, 26, 43, 0.05)',
                 }}
             />
 

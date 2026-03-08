@@ -25,7 +25,7 @@ export function useLiveIssues({
     const fetchIssues = useCallback(async () => {
         try {
             // Fetch reports from API (using type=report to get only reports)
-            const res = await fetch('/api/feed?limit=20&type=report');
+            const res = await fetch('/api/feed?limit=20&type=report&neighborhood=downtown-waterloo');
             if (!res.ok) throw new Error('Failed to fetch issues');
             
             const data = await res.json();
@@ -37,9 +37,9 @@ export function useLiveIssues({
                 description: item.caption || '',
                 category: 'general', // API doesn't return category yet, default to general
                 severity: item.severity || 'medium',
-                latitude: item.latitude || 43.2557,
-                longitude: item.longitude || -79.9192,
-                neighborhood: item.neighborhood || 'downtown-hamilton',
+                latitude: item.latitude || 43.4643,
+                longitude: item.longitude || -80.5204,
+                neighborhood: item.neighborhood || 'downtown-waterloo',
                 imageUrl: item.mediaUrl || 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=400&q=80',
                 upvotes: item.upvotes || 0,
                 comments: [], // Comments not fetched in feed list

@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAgentVoice } from '@/hooks/useAgentVoice';
 import type { VoiceMode } from '@/hooks/useAgentVoice';
 import { useVoiceControl } from '@/lib/voiceContext';
+import dynamic from 'next/dynamic';
 import {
   Camera,
   Upload,
@@ -23,7 +24,13 @@ import {
   Loader2,
   Mic,
   Pencil,
+  Send,
+  Clock,
+  Hash,
+  User,
 } from 'lucide-react';
+
+const ReportJourney = dynamic(() => import('./report-journey/ReportJourney'), { ssr: false });
 
 
 /* ─── Types ─── */
@@ -36,13 +43,13 @@ interface AgentAnalysis {
   spoken_response: string;
 }
 
-type Step = 'intake' | 'scanning' | 'consultation';
+type Step = 'intake' | 'scanning' | 'consultation' | 'form-preview' | 'filing';
 
-const SEVERITY_COLORS: Record<string, string> = {
-  critical: 'text-red-400 bg-red-500/15 border-red-500/30',
-  high: 'text-orange-400 bg-orange-500/15 border-orange-500/30',
-  medium: 'text-yellow-400 bg-yellow-500/15 border-yellow-500/30',
-  low: 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30',
+const SEVERITY_CHIP: Record<string, string> = {
+  critical: 'bg-red-700/[0.08] text-red-700 border-red-700/20',
+  high: 'bg-orange-700/[0.08] text-orange-700 border-orange-700/20',
+  medium: 'bg-amber-700/[0.08] text-amber-700 border-amber-700/20',
+  low: 'bg-green-700/[0.08] text-green-700 border-green-700/20',
 };
 
 /* ─── Subcomponents ─── */
@@ -51,26 +58,30 @@ function ScanOverlay() {
   return (
     <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
       {/* Grid lines */}
-      <div className="absolute inset-0 opacity-20">
+      <div className="absolute inset-0 opacity-15">
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={`h-${i}`}
-            className="absolute w-full h-px bg-cyan-400"
-            style={{ top: `${(i + 1) * 12.5}%` }}
+            className="absolute w-full h-px"
+            style={{ top: `${(i + 1) * 12.5}%`, background: 'var(--accent-primary)' }}
           />
         ))}
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={`v-${i}`}
-            className="absolute h-full w-px bg-cyan-400"
-            style={{ left: `${(i + 1) * 12.5}%` }}
+            className="absolute h-full w-px"
+            style={{ left: `${(i + 1) * 12.5}%`, background: 'var(--accent-primary)' }}
           />
         ))}
       </div>
 
       {/* Sweeping scan bar */}
       <motion.div
-        className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_20px_4px_rgba(34,211,238,0.4)]"
+        className="absolute left-0 right-0 h-1"
+        style={{
+          background: 'linear-gradient(to right, transparent, var(--accent-primary), transparent)',
+          boxShadow: '0 0 20px 4px rgba(107, 15, 26, 0.3)',
+        }}
         animate={{ top: ['0%', '100%', '0%'] }}
         transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
       />
@@ -81,7 +92,7 @@ function ScanOverlay() {
           key={pos}
           className={`absolute w-6 h-6 ${pos}`}
           style={{
-            borderColor: 'rgba(34,211,238,0.6)',
+            borderColor: 'rgba(107, 15, 26, 0.5)',
             borderWidth: '2px',
             borderStyle: 'solid',
             borderRadius: '4px',
@@ -96,7 +107,7 @@ function ScanOverlay() {
   );
 }
 
-/* ─── Voice Aura: Pulsing glassmorphism ring around agent card ─── */
+/* ─── Voice Aura: Pulsing ring around agent card ─── */
 
 function VoiceAura({ voiceMode }: { voiceMode: VoiceMode }) {
   return (
@@ -118,9 +129,9 @@ function VoiceAura({ voiceMode }: { voiceMode: VoiceMode }) {
               scale: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
             }}
             style={{
-              border: '2px solid rgba(34, 211, 238, 0.4)',
+              border: '2px solid rgba(107, 15, 26, 0.3)',
               boxShadow:
-                '0 0 30px rgba(34, 211, 238, 0.15), inset 0 0 30px rgba(34, 211, 238, 0.05)',
+                '0 0 30px rgba(107, 15, 26, 0.1), inset 0 0 30px rgba(107, 15, 26, 0.03)',
             }}
           />
           {/* Inner glow ring */}
@@ -139,8 +150,8 @@ function VoiceAura({ voiceMode }: { voiceMode: VoiceMode }) {
               delay: 0.3,
             }}
             style={{
-              border: '1px solid rgba(34, 211, 238, 0.3)',
-              boxShadow: '0 0 20px rgba(34, 211, 238, 0.1)',
+              border: '1px solid rgba(107, 15, 26, 0.2)',
+              boxShadow: '0 0 20px rgba(107, 15, 26, 0.08)',
             }}
           />
         </>
@@ -167,13 +178,14 @@ function VoiceHUD({
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.3 }}
-          className="flex items-center gap-2 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]"
+          className="flex items-center gap-2 p-3 rounded-xl"
+          style={{ background: 'rgba(107, 15, 26, 0.04)', border: '1px solid rgba(107, 15, 26, 0.08)' }}
         >
-          <Mic className="w-4 h-4 text-white/30" />
-          <p className="text-xs text-white/30">
+          <Mic className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
             Say{' '}
-            <span className="text-cyan-400/60 font-medium">
-              &ldquo;Hey SafePulse&rdquo;
+            <span className="font-medium" style={{ color: 'var(--accent-primary)' }}>
+              &ldquo;Hey NorthReport&rdquo;
             </span>{' '}
             to speak with the agent
           </p>
@@ -187,16 +199,17 @@ function VoiceHUD({
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.3 }}
-          className="p-3 rounded-xl bg-cyan-500/[0.08] border border-cyan-500/30 space-y-2"
+          className="p-3 rounded-xl space-y-2"
+          style={{ background: 'rgba(107, 15, 26, 0.06)', border: '1px solid rgba(107, 15, 26, 0.15)' }}
         >
           <div className="flex items-center gap-2">
             <motion.div
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 1, repeat: Infinity }}
             >
-              <Mic className="w-4 h-4 text-cyan-400" />
+              <Mic className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} />
             </motion.div>
-            <p className="text-xs font-semibold text-cyan-400 tracking-wide uppercase">
+            <p className="text-xs font-semibold tracking-wide uppercase" style={{ color: 'var(--accent-primary)' }}>
               Listening...
             </p>
             {/* Animated sound bars */}
@@ -204,7 +217,8 @@ function VoiceHUD({
               {[0, 1, 2, 3, 4].map((i) => (
                 <motion.div
                   key={i}
-                  className="w-0.5 bg-cyan-400 rounded-full"
+                  className="w-0.5 rounded-full"
+                  style={{ background: 'var(--accent-primary)' }}
                   animate={{ height: ['4px', '12px', '4px'] }}
                   transition={{
                     duration: 0.8,
@@ -220,7 +234,8 @@ function VoiceHUD({
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-sm text-cyan-300/80 italic"
+              className="text-sm italic"
+              style={{ color: 'var(--text-secondary)' }}
             >
               &ldquo;{transcript}&rdquo;
             </motion.p>
@@ -235,16 +250,17 @@ function VoiceHUD({
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.3 }}
-          className="p-3 rounded-xl bg-blue-500/[0.08] border border-blue-500/30 space-y-2"
+          className="p-3 rounded-xl space-y-2"
+          style={{ background: 'rgba(107, 15, 26, 0.06)', border: '1px solid rgba(107, 15, 26, 0.15)' }}
         >
           <div className="flex items-center gap-2">
-            <Loader2 className="w-4 h-4 text-blue-400 animate-spin" />
-            <p className="text-xs font-semibold text-blue-400 tracking-wide uppercase">
+            <Loader2 className="w-4 h-4 animate-spin" style={{ color: 'var(--accent-primary)' }} />
+            <p className="text-xs font-semibold tracking-wide uppercase" style={{ color: 'var(--accent-primary)' }}>
               Processing command...
             </p>
           </div>
           {transcript && (
-            <p className="text-sm text-blue-300/70 italic">
+            <p className="text-sm italic" style={{ color: 'var(--text-secondary)' }}>
               &ldquo;{transcript}&rdquo;
             </p>
           )}
@@ -259,15 +275,21 @@ function VoiceHUD({
 export default function SmartReportAgent() {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const [step, setStep] = useState<Step>('intake');
+  const [showCamera, setShowCamera] = useState(false);
   const [image, setImage] = useState<string | null>(null);
-  const [address, setAddress] = useState('100 Main St W, Hamilton, ON');
+  const [address, setAddress] = useState('137 University Ave W, Waterloo, ON');
   const [notes, setNotes] = useState('');
   const [analysis, setAnalysis] = useState<AgentAnalysis | null>(null);
   const [error, setError] = useState('');
   const [filingLoading, setFilingLoading] = useState(false);
-  const [userLocation, setUserLocation] = useState({ lat: 43.2557, lng: -79.8711 });
+  const [userLocation, setUserLocation] = useState({ lat: 43.4643, lng: -80.5204 });
+  const [reportId, setReportId] = useState<string | null>(null);
+  const [refNumber] = useState(() => `WR-${Date.now().toString(36).toUpperCase()}`);
 
   /* ── Pick up captured image/GPS from CaptureCamera via sessionStorage ── */
   useEffect(() => {
@@ -343,11 +365,53 @@ export default function SmartReportAgent() {
     reader.readAsDataURL(file);
   };
 
+  /* ── Camera ── */
+  const openCamera = async () => {
+    setShowCamera(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
+        audio: false,
+      });
+      streamRef.current = stream;
+      if (videoRef.current) videoRef.current.srcObject = stream;
+    } catch {
+      setError('Could not access camera.');
+      setShowCamera(false);
+    }
+  };
+
+  const capturePhoto = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0);
+    setImage(canvas.toDataURL('image/jpeg', 0.7));
+    closeCamera();
+  };
+
+  const closeCamera = () => {
+    streamRef.current?.getTracks().forEach(t => t.stop());
+    streamRef.current = null;
+    setShowCamera(false);
+  };
+
   /* ── Listen for global voice "analyze" event ── */
   useEffect(() => {
     const handler = () => { handleAnalyzeRef.current(); };
-    window.addEventListener('safepulse:analyze', handler);
-    return () => { window.removeEventListener('safepulse:analyze', handler); };
+    window.addEventListener('northreport:analyze', handler);
+    return () => { window.removeEventListener('northreport:analyze', handler); };
+  }, []);
+
+  /* ── Listen for global voice "open camera" event ── */
+  useEffect(() => {
+    const handler = () => { openCamera(); };
+    window.addEventListener('northreport:open-camera', handler);
+    return () => { window.removeEventListener('northreport:open-camera', handler); };
   }, []);
 
   /* ── Submit to AI ── */
@@ -383,18 +447,31 @@ export default function SmartReportAgent() {
     }
   };
 
-  /* ── Save Draft to Dashboard ── */
+  /* ── Save & Submit Report ── */
   const handleFile = async () => {
     if (!analysis) return;
     setFilingLoading(true);
 
     try {
-      // Prefer capture-time GPS (from CaptureCamera sessionStorage handoff).
-      // Fall back to a fresh reading only when no capture-time coords exist.
       let latitude = userLocation.lat;
       let longitude = userLocation.lng;
 
-      const isDefault = latitude === 43.2557 && longitude === -79.8711;
+      // Geocode the entered address so the report & animation has a real origin
+      if (address) {
+        try {
+          const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+          const geoRes = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxToken}&proximity=-80.5204,43.4643&limit=1`);
+          const geoData = await geoRes.json();
+          if (geoData.features && geoData.features.length > 0) {
+            longitude = geoData.features[0].center[0];
+            latitude = geoData.features[0].center[1];
+          }
+        } catch (err) {
+          console.error('Geocoding failed:', err);
+        }
+      }
+
+      const isDefault = latitude === 43.4643 && longitude === -80.5204;
       if (isDefault) {
         const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
           navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })
@@ -405,30 +482,33 @@ export default function SmartReportAgent() {
         }
       }
 
+      // Crucial: Update the state so ReportJourney uses these new coordinates
+      setUserLocation({ lat: latitude, lng: longitude });
+
       const res = await fetch('/api/reports', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           description: analysis.technical_description,
           category: 'infrastructure',
-          neighborhood: 'downtown-hamilton',
+          neighborhood: 'downtown-waterloo',
           latitude,
           longitude,
           imageBase64: image,
-          status: 'draft',
+          status: 'submitted',
         }),
       });
 
       const resData = await res.json();
       if (!res.ok) {
-        throw new Error(resData.error || 'Saving draft failed');
+        throw new Error(resData.error || 'Submitting report failed');
       }
+      setReportId(resData.id);
       sessionStorage.setItem('newReportId', resData.id);
-
-      // Redirect to dashboard to review and file
-      router.push('/dashboard');
+      setUserLocation({ lat: latitude, lng: longitude });
+      setStep('form-preview');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Saving draft failed');
+      setError(err instanceof Error ? err.message : 'Submitting report failed');
     } finally {
       setFilingLoading(false);
     }
@@ -455,29 +535,39 @@ export default function SmartReportAgent() {
             transition={{ duration: 0.35, ease: 'easeOut' }}
           >
             {/* Header badge */}
-            <div className="flex items-center gap-2 mb-6">
-              <div className="w-8 h-8 rounded-lg bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center">
-                <Shield className="w-4 h-4 text-cyan-400" />
+            <div className="flex items-center gap-3 mb-6">
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{ background: 'rgba(107, 15, 26, 0.1)', border: '1px solid rgba(107, 15, 26, 0.15)' }}
+              >
+                <Shield className="w-5 h-5" style={{ color: 'var(--accent-primary)' }} />
               </div>
               <div>
-                <p className="text-xs font-semibold text-cyan-400 tracking-wider uppercase">
-                  Hamilton AI Agent
+                <p className="text-sm font-semibold tracking-wide uppercase" style={{ color: 'var(--accent-primary)', fontFamily: 'var(--font-utility)' }}>
+                  Waterloo AI Agent
                 </p>
-                <p className="text-[11px] text-white/40">Smart City Intake System</p>
+                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Smart City Intake System</p>
               </div>
             </div>
 
-            {/* Glass card */}
-            <div className="rounded-2xl bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] p-6 space-y-5">
-              {/* Image upload area */}
+            {/* Card */}
+            <div
+              className="rounded-2xl p-6 space-y-5"
+              style={{
+                background: 'var(--palette-cream)',
+                border: '1px solid var(--border-hairline)',
+                boxShadow: 'var(--shadow-glass-md)',
+              }}
+            >
+              {/* Hidden file input for gallery */}
               <input
                 ref={fileRef}
                 type="file"
                 accept="image/*"
-                capture="environment"
                 onChange={handleImage}
                 className="hidden"
               />
+              <canvas ref={canvasRef} className="hidden" />
 
               {image ? (
                 <div className="relative rounded-xl overflow-hidden">
@@ -494,57 +584,106 @@ export default function SmartReportAgent() {
                   </button>
                 </div>
               ) : (
-                <button
-                  onClick={() => fileRef.current?.click()}
-                  className="w-full py-10 rounded-xl border-2 border-dashed border-white/10 hover:border-cyan-500/30 hover:bg-cyan-500/[0.04] transition-all duration-300 flex flex-col items-center gap-3 group"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-white/[0.06] group-hover:bg-cyan-500/15 flex items-center justify-center transition-colors">
-                    <Camera className="w-6 h-6 text-white/40 group-hover:text-cyan-400 transition-colors" />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm font-medium text-white/60 group-hover:text-white/80 transition-colors">
-                      Capture or Upload Photo
-                    </p>
-                    <p className="text-xs text-white/30 mt-1">
-                      Take a photo of the hazard for AI analysis
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-4 mt-1 text-[11px] text-white/25">
-                    <span className="flex items-center gap-1">
-                      <Camera className="w-3 h-3" /> Camera
+                <div className="space-y-3">
+                  <button
+                    onClick={openCamera}
+                    className="w-full py-8 rounded-xl border-2 border-dashed transition-all duration-300 flex flex-col items-center gap-3"
+                    style={{ borderColor: 'var(--border-subtle)' }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(107, 15, 26, 0.3)';
+                      e.currentTarget.style.background = 'rgba(107, 15, 26, 0.03)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                      e.currentTarget.style.background = 'transparent';
+                    }}
+                  >
+                    <div
+                      className="w-12 h-12 rounded-xl flex items-center justify-center"
+                      style={{ background: 'rgba(107, 15, 26, 0.06)' }}
+                    >
+                      <Camera className="w-6 h-6" style={{ color: 'var(--accent-primary)' }} />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                        Take a Photo
+                      </p>
+                      <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
+                        Open camera to capture the hazard
+                      </p>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => fileRef.current?.click()}
+                    className="w-full py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
+                    style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(107, 15, 26, 0.3)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                    }}
+                  >
+                    <Upload className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+                    <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+                      Upload from Gallery
                     </span>
-                    <span className="flex items-center gap-1">
-                      <Upload className="w-3 h-3" /> Gallery
-                    </span>
-                  </div>
-                </button>
+                  </button>
+                </div>
               )}
 
               {/* Address */}
               <div>
-                <label className="flex items-center gap-1.5 text-xs font-medium text-white/50 mb-2">
+                <label className="flex items-center gap-1.5 text-xs font-medium mb-2" style={{ color: 'var(--text-muted)' }}>
                   <MapPin className="w-3 h-3" /> Location
                 </label>
                 <input
                   type="text"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-sm text-white/90 placeholder-white/25 focus:outline-none focus:border-cyan-500/40 focus:bg-white/[0.06] transition-all"
+                  className="w-full px-4 py-3 rounded-xl text-sm transition-all outline-none"
                   placeholder="Enter address..."
+                  style={{
+                    background: 'var(--bg-input)',
+                    border: '1px solid var(--border-subtle)',
+                    color: 'var(--text-primary)',
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--accent-primary)';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px var(--accent-muted)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
                 />
               </div>
 
               {/* Notes */}
               <div>
-                <label className="flex items-center gap-1.5 text-xs font-medium text-white/50 mb-2">
+                <label className="flex items-center gap-1.5 text-xs font-medium mb-2" style={{ color: 'var(--text-muted)' }}>
                   <StickyNote className="w-3 h-3" /> Notes (optional)
                 </label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={3}
-                  className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-sm text-white/90 placeholder-white/25 focus:outline-none focus:border-cyan-500/40 focus:bg-white/[0.06] transition-all resize-none"
+                  className="w-full px-4 py-3 rounded-xl text-sm transition-all resize-none outline-none"
                   placeholder="Any extra context for the AI agent..."
+                  style={{
+                    background: 'var(--bg-input)',
+                    border: '1px solid var(--border-subtle)',
+                    color: 'var(--text-primary)',
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--accent-primary)';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px var(--accent-muted)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
                 />
               </div>
 
@@ -553,7 +692,8 @@ export default function SmartReportAgent() {
                 <motion.p
                   initial={{ opacity: 0, y: -6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-sm text-red-400"
+                  className="text-sm"
+                  style={{ color: 'var(--severity-critical)' }}
                 >
                   {error}
                 </motion.p>
@@ -563,7 +703,17 @@ export default function SmartReportAgent() {
               <button
                 onClick={handleAnalyze}
                 disabled={!image}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold text-sm flex items-center justify-center gap-2 hover:brightness-110 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-cyan-500/20"
+                className="w-full py-3.5 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                style={{
+                  background: 'var(--accent-primary)',
+                  boxShadow: '0 4px 12px rgba(107, 15, 26, 0.2)',
+                }}
+                onMouseEnter={(e) => {
+                  if (!e.currentTarget.disabled) e.currentTarget.style.background = 'var(--accent-hover)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'var(--accent-primary)';
+                }}
               >
                 <ScanLine className="w-4 h-4" />
                 Analyze with AI Agent
@@ -584,7 +734,14 @@ export default function SmartReportAgent() {
             transition={{ duration: 0.35, ease: 'easeOut' }}
             className="space-y-6"
           >
-            <div className="rounded-2xl bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] p-6">
+            <div
+              className="rounded-2xl p-6"
+              style={{
+                background: 'var(--palette-cream)',
+                border: '1px solid var(--border-hairline)',
+                boxShadow: 'var(--shadow-glass-md)',
+              }}
+            >
               {/* Scanning image */}
               <div className="relative rounded-2xl overflow-hidden mb-6">
                 <img
@@ -598,16 +755,19 @@ export default function SmartReportAgent() {
               {/* Status */}
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <div className="w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center">
-                    <ScanLine className="w-5 h-5 text-cyan-400 animate-pulse" />
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ background: 'rgba(107, 15, 26, 0.1)', border: '1px solid rgba(107, 15, 26, 0.15)' }}
+                  >
+                    <ScanLine className="w-5 h-5 animate-pulse" style={{ color: 'var(--accent-primary)' }} />
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-white/90">
+                  <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
                     AI Agent Analyzing...
                   </p>
-                  <p className="text-xs text-white/40">
-                    Cross-referencing Hamilton bylaws & Ontario regulations
+                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                    Cross-referencing Waterloo bylaws & Ontario regulations
                   </p>
                 </div>
               </div>
@@ -617,7 +777,8 @@ export default function SmartReportAgent() {
                 {[0, 1, 2, 3, 4].map((i) => (
                   <motion.div
                     key={i}
-                    className="w-1.5 h-1.5 rounded-full bg-cyan-400"
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ background: 'var(--accent-primary)' }}
                     animate={{ opacity: [0.2, 1, 0.2] }}
                     transition={{
                       duration: 1.2,
@@ -647,18 +808,22 @@ export default function SmartReportAgent() {
 
             {/* Agent header */}
             <div className="flex items-center gap-2 mb-2">
-              <div className="relative w-8 h-8 rounded-lg bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center">
-                <Shield className="w-4 h-4 text-cyan-400" />
+              <div
+                className="relative w-8 h-8 rounded-lg flex items-center justify-center"
+                style={{ background: 'rgba(107, 15, 26, 0.1)', border: '1px solid rgba(107, 15, 26, 0.15)' }}
+              >
+                <Shield className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} />
                 {/* Voice active indicator dot */}
                 {voiceMode !== 'idle' && (
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-cyan-400"
-                    style={{ boxShadow: '0 0 8px rgba(34, 211, 238, 0.6)' }}
+                    className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full"
+                    style={{ background: 'var(--accent-primary)', boxShadow: '0 0 8px rgba(107, 15, 26, 0.5)' }}
                   >
                     <motion.div
-                      className="absolute inset-0 rounded-full bg-cyan-400"
+                      className="absolute inset-0 rounded-full"
+                      style={{ background: 'var(--accent-primary)' }}
                       animate={{ scale: [1, 1.8], opacity: [0.6, 0] }}
                       transition={{ duration: 1.5, repeat: Infinity }}
                     />
@@ -666,14 +831,15 @@ export default function SmartReportAgent() {
                 )}
               </div>
               <div className="flex items-center gap-2">
-                <p className="text-xs font-semibold text-cyan-400 tracking-wider uppercase">
+                <p className="text-xs font-semibold tracking-wider uppercase" style={{ color: 'var(--accent-primary)' }}>
                   Agent Assessment
                 </p>
                 {voiceMode === 'listening' && (
                   <motion.span
                     initial={{ opacity: 0, x: -4 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="text-[10px] text-cyan-300/60 font-medium"
+                    className="text-[10px] font-medium"
+                    style={{ color: 'var(--text-muted)' }}
                   >
                     Voice Active
                   </motion.span>
@@ -686,67 +852,83 @@ export default function SmartReportAgent() {
               <img
                 src={image!}
                 alt="Analyzed"
-                className="w-full h-32 object-cover opacity-60"
+                className="w-full h-32 object-cover opacity-80"
               />
             </div>
 
             {/* Findings card */}
-            <div className="rounded-2xl bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] p-5 space-y-4">
+            <div
+              className="rounded-2xl p-5 space-y-4"
+              style={{
+                background: 'var(--palette-cream)',
+                border: '1px solid var(--border-hairline)',
+                boxShadow: 'var(--shadow-glass-md)',
+              }}
+            >
               {/* Severity badge */}
               <div className="flex items-center justify-between">
                 <span
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border ${SEVERITY_COLORS[analysis.severity]}`}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border ${SEVERITY_CHIP[analysis.severity]}`}
                 >
                   <AlertTriangle className="w-3 h-3" />
                   {analysis.severity} severity
                 </span>
-                <span className="text-xs text-white/30">
+                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
                   {analysis.hazard_detected ? 'Hazard Confirmed' : 'No Hazard'}
                 </span>
               </div>
 
               {/* Department */}
-              <div className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
-                <Building2 className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" />
+              <div
+                className="flex items-start gap-3 p-3 rounded-xl"
+                style={{ background: 'var(--bg-input)', border: '1px solid var(--border-hairline)' }}
+              >
+                <Building2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--accent-primary)' }} />
                 <div>
-                  <p className="text-[11px] text-white/40 uppercase tracking-wide font-medium">
+                  <p className="text-[11px] uppercase tracking-wide font-medium" style={{ color: 'var(--text-muted)' }}>
                     Department
                   </p>
-                  <p className="text-sm text-white/90 font-medium mt-0.5">
+                  <p className="text-sm font-medium mt-0.5" style={{ color: 'var(--text-primary)' }}>
                     {analysis.department}
                   </p>
                 </div>
               </div>
 
               {/* Bylaw reference */}
-              <div className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
-                <Scale className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
+              <div
+                className="flex items-start gap-3 p-3 rounded-xl"
+                style={{ background: 'var(--bg-input)', border: '1px solid var(--border-hairline)' }}
+              >
+                <Scale className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--severity-medium)' }} />
                 <div>
-                  <p className="text-[11px] text-white/40 uppercase tracking-wide font-medium">
+                  <p className="text-[11px] uppercase tracking-wide font-medium" style={{ color: 'var(--text-muted)' }}>
                     Applicable Regulation
                   </p>
-                  <p className="text-sm text-white/90 font-medium mt-0.5">
+                  <p className="text-sm font-medium mt-0.5" style={{ color: 'var(--text-primary)' }}>
                     {analysis.bylaw_reference}
                   </p>
                 </div>
               </div>
 
               {/* Technical description — editable */}
-              <div className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
-                <FileText className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+              <div
+                className="flex items-start gap-3 p-3 rounded-xl"
+                style={{ background: 'var(--bg-input)', border: '1px solid var(--border-hairline)' }}
+              >
+                <FileText className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--accent-primary)' }} />
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <p className="text-[11px] text-white/40 uppercase tracking-wide font-medium">
+                    <p className="text-[11px] uppercase tracking-wide font-medium" style={{ color: 'var(--text-muted)' }}>
                       Report Summary
                     </p>
-                    <span className="flex items-center gap-1 text-[10px] text-white/25">
+                    <span className="flex items-center gap-1 text-[10px]" style={{ color: 'var(--text-faint)' }}>
                       <Pencil className="w-2.5 h-2.5" /> Tap to edit
                     </span>
                   </div>
                   <motion.div
                     key={analysis.technical_description}
-                    initial={{ backgroundColor: 'rgba(34, 211, 238, 0.15)' }}
-                    animate={{ backgroundColor: 'rgba(34, 211, 238, 0)' }}
+                    initial={{ backgroundColor: 'rgba(107, 15, 26, 0.08)' }}
+                    animate={{ backgroundColor: 'rgba(107, 15, 26, 0)' }}
                     transition={{ duration: 1.5 }}
                     className="rounded-md mt-0.5 -mx-1"
                   >
@@ -758,15 +940,28 @@ export default function SmartReportAgent() {
                         )
                       }
                       rows={3}
-                      className="w-full bg-transparent text-sm text-white/70 leading-relaxed px-1 resize-none focus:outline-none focus:text-white/90 focus:ring-1 focus:ring-cyan-500/30 rounded-md transition-colors"
+                      className="w-full bg-transparent text-sm leading-relaxed px-1 resize-none transition-colors outline-none"
+                      style={{ color: 'var(--text-secondary)' }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.color = 'var(--text-primary)';
+                        e.currentTarget.style.boxShadow = '0 0 0 1px rgba(107, 15, 26, 0.2)';
+                        e.currentTarget.style.borderRadius = '6px';
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.color = 'var(--text-secondary)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
                     />
                   </motion.div>
                 </div>
               </div>
 
               {/* Spoken response preview */}
-              <div className="p-3 rounded-xl bg-cyan-500/[0.06] border border-cyan-500/20">
-                <p className="text-xs text-cyan-300/70 italic leading-relaxed">
+              <div
+                className="p-3 rounded-xl"
+                style={{ background: 'rgba(107, 15, 26, 0.04)', border: '1px solid rgba(107, 15, 26, 0.1)' }}
+              >
+                <p className="text-xs italic leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                   &ldquo;{analysis.spoken_response}&rdquo;
                 </p>
               </div>
@@ -782,24 +977,45 @@ export default function SmartReportAgent() {
                   setStep('intake');
                   setAnalysis(null);
                 }}
-                className="flex-1 py-3 rounded-xl bg-white/[0.06] border border-white/[0.08] text-sm text-white/60 hover:bg-white/[0.1] transition-all"
+                className="flex-1 py-3 rounded-xl text-sm transition-all"
+                style={{
+                  background: 'var(--palette-cream)',
+                  border: '1px solid var(--border-subtle)',
+                  color: 'var(--text-secondary)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--bg-hover)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'var(--palette-cream)';
+                }}
               >
                 Start Over
               </button>
               <button
                 onClick={handleFile}
                 disabled={filingLoading}
-                className="flex-[2] py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold text-sm flex items-center justify-center gap-2 hover:brightness-110 disabled:opacity-50 transition-all shadow-lg shadow-cyan-500/20"
+                className="flex-[2] py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50 transition-all"
+                style={{
+                  background: 'var(--accent-primary)',
+                  boxShadow: '0 4px 12px rgba(107, 15, 26, 0.2)',
+                }}
+                onMouseEnter={(e) => {
+                  if (!e.currentTarget.disabled) e.currentTarget.style.background = 'var(--accent-hover)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'var(--accent-primary)';
+                }}
               >
                 {filingLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Saving...
+                    Submitting...
                   </>
                 ) : (
                   <>
-                    <CheckCircle2 className="w-4 h-4" />
-                    Save as 311 Draft
+                    <Send className="w-4 h-4" />
+                    Submit to 311
                   </>
                 )}
               </button>
@@ -807,6 +1023,215 @@ export default function SmartReportAgent() {
           </motion.div>
         )}
 
+        {/* ─────────── STEP 4: FORM PREVIEW ─────────── */}
+        {step === 'form-preview' && analysis && (
+          <motion.div
+            key="form-preview"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="space-y-4"
+          >
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-2">
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{ background: 'rgba(107, 15, 26, 0.1)', border: '1px solid rgba(107, 15, 26, 0.15)' }}
+              >
+                <FileText className="w-5 h-5" style={{ color: 'var(--accent-primary)' }} />
+              </div>
+              <div>
+                <p className="text-sm font-semibold tracking-wide uppercase" style={{ color: 'var(--accent-primary)', fontFamily: 'var(--font-utility)' }}>
+                  311 Service Request
+                </p>
+                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Review before filing</p>
+              </div>
+            </div>
+
+            {/* Form card */}
+            <div
+              className="rounded-2xl overflow-hidden"
+              style={{
+                background: 'var(--palette-cream)',
+                border: '1px solid var(--border-hairline)',
+                boxShadow: 'var(--shadow-glass-md)',
+              }}
+            >
+              {/* Form header bar */}
+              <div
+                className="px-5 py-3 flex items-center justify-between"
+                style={{ background: 'var(--accent-primary)' }}
+              >
+                <span className="text-xs font-bold text-white tracking-wider uppercase">
+                  City of Waterloo — 311 Form
+                </span>
+                <span className="text-[10px] text-white/70 font-mono">
+                  {refNumber}
+                </span>
+              </div>
+
+              {/* Image */}
+              {image && (
+                <div className="px-5 pt-4">
+                  <img
+                    src={image}
+                    alt="Report photo"
+                    className="w-full h-36 object-cover rounded-xl"
+                    style={{ border: '1px solid var(--border-hairline)' }}
+                  />
+                </div>
+              )}
+
+              {/* Form fields */}
+              <div className="px-5 py-4 space-y-3">
+                {/* Reference */}
+                <div className="flex items-start gap-3 py-2" style={{ borderBottom: '1px solid var(--border-hairline)' }}>
+                  <Hash className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
+                  <div className="flex-1">
+                    <p className="text-[10px] uppercase tracking-wider font-medium" style={{ color: 'var(--text-muted)' }}>Reference #</p>
+                    <p className="text-sm font-mono font-medium" style={{ color: 'var(--text-primary)' }}>{refNumber}</p>
+                  </div>
+                </div>
+
+                {/* Department */}
+                <div className="flex items-start gap-3 py-2" style={{ borderBottom: '1px solid var(--border-hairline)' }}>
+                  <Building2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
+                  <div className="flex-1">
+                    <p className="text-[10px] uppercase tracking-wider font-medium" style={{ color: 'var(--text-muted)' }}>Department</p>
+                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{analysis.department}</p>
+                  </div>
+                </div>
+
+                {/* Severity */}
+                <div className="flex items-start gap-3 py-2" style={{ borderBottom: '1px solid var(--border-hairline)' }}>
+                  <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
+                  <div className="flex-1">
+                    <p className="text-[10px] uppercase tracking-wider font-medium" style={{ color: 'var(--text-muted)' }}>Priority</p>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase ${SEVERITY_CHIP[analysis.severity]}`}>
+                      {analysis.severity}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Location */}
+                <div className="flex items-start gap-3 py-2" style={{ borderBottom: '1px solid var(--border-hairline)' }}>
+                  <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
+                  <div className="flex-1">
+                    <p className="text-[10px] uppercase tracking-wider font-medium" style={{ color: 'var(--text-muted)' }}>Location</p>
+                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{address}</p>
+                  </div>
+                </div>
+
+                {/* Bylaw */}
+                <div className="flex items-start gap-3 py-2" style={{ borderBottom: '1px solid var(--border-hairline)' }}>
+                  <Scale className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
+                  <div className="flex-1">
+                    <p className="text-[10px] uppercase tracking-wider font-medium" style={{ color: 'var(--text-muted)' }}>Applicable Regulation</p>
+                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{analysis.bylaw_reference}</p>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className="flex items-start gap-3 py-2" style={{ borderBottom: '1px solid var(--border-hairline)' }}>
+                  <FileText className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
+                  <div className="flex-1">
+                    <p className="text-[10px] uppercase tracking-wider font-medium" style={{ color: 'var(--text-muted)' }}>Description</p>
+                    <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>{analysis.technical_description}</p>
+                  </div>
+                </div>
+
+                {/* Timestamp */}
+                <div className="flex items-start gap-3 py-2">
+                  <Clock className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
+                  <div className="flex-1">
+                    <p className="text-[10px] uppercase tracking-wider font-medium" style={{ color: 'var(--text-muted)' }}>Submitted</p>
+                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                      {new Date().toLocaleString('en-CA', { dateStyle: 'long', timeStyle: 'short' })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Status bar */}
+              <div
+                className="px-5 py-3 flex items-center gap-2"
+                style={{ background: 'rgba(22, 163, 74, 0.08)', borderTop: '1px solid rgba(22, 163, 74, 0.15)' }}
+              >
+                <CheckCircle2 className="w-4 h-4 text-green-600" />
+                <span className="text-xs font-semibold text-green-700">Report Verified &amp; Ready to File</span>
+              </div>
+            </div>
+
+            {/* File button */}
+            <button
+              onClick={() => setStep('filing')}
+              className="w-full py-3.5 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all"
+              style={{
+                background: 'var(--accent-primary)',
+                boxShadow: '0 4px 12px rgba(107, 15, 26, 0.2)',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--accent-hover)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--accent-primary)'; }}
+            >
+              <Send className="w-4 h-4" />
+              File to Waterloo City Hall
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </motion.div>
+        )}
+
+        {/* ─────────── STEP 5: FILING ANIMATION ─────────── */}
+        {step === 'filing' && (
+          <ReportJourney
+            reportLocation={userLocation}
+            reportType="311 Service Request"
+            onComplete={() => {
+              router.push('/dashboard');
+            }}
+            isVisible={true}
+          />
+        )}
+
+      </AnimatePresence>
+
+      {/* Live camera viewfinder */}
+      <AnimatePresence>
+        {showCamera && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] bg-black flex flex-col"
+          >
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="flex-1 object-cover w-full"
+            />
+            <div className="absolute top-6 right-6">
+              <button
+                onClick={closeCamera}
+                className="p-3 rounded-full backdrop-blur-md"
+                style={{ background: 'rgba(0,0,0,0.5)' }}
+              >
+                <X className="w-6 h-6 text-white" />
+              </button>
+            </div>
+            <div className="absolute bottom-12 left-0 right-0 flex justify-center">
+              <button
+                onClick={capturePhoto}
+                className="w-[72px] h-[72px] rounded-full flex items-center justify-center"
+                style={{ border: '4px solid rgba(255,255,255,0.9)' }}
+              >
+                <div className="w-[58px] h-[58px] rounded-full bg-white/95" />
+              </button>
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );

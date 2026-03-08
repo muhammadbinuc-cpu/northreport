@@ -35,17 +35,17 @@ export default function EnvelopeMarker({ rotation, visible }: EnvelopeMarkerProp
                 <rect x="1" y="5" width="38" height="17" rx="2.5" stroke="#cbd5e1" strokeWidth="0.6" />
 
                 {/* Red-blue postal stripe along bottom of cargo */}
-                <rect x="1" y="18" width="38" height="2" fill="#1d4ed8" />
+                <rect x="1" y="18" width="38" height="2" fill="#8b1a2b" />
                 <rect x="1" y="20" width="38" height="1.5" fill="#dc2626" />
 
                 {/* Thin accent line top */}
-                <rect x="1" y="5" width="38" height="1.2" rx="0.6" fill="#1d4ed8" opacity="0.7" />
+                <rect x="1" y="5" width="38" height="1.2" rx="0.6" fill="#8b1a2b" opacity="0.7" />
 
                 {/* Envelope icon on cargo side */}
-                <rect x="11" y="8.5" width="14" height="9" rx="1.5" fill="#eff6ff" stroke="#3b82f6" strokeWidth="0.7" />
+                <rect x="11" y="8.5" width="14" height="9" rx="1.5" fill="#eff6ff" stroke="#8b1a2b" strokeWidth="0.7" />
                 <path
                     d="M12.5 10 L18 14 L23.5 10"
-                    stroke="#2563eb"
+                    stroke="#8b1a2b"
                     strokeWidth="1"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -109,7 +109,7 @@ export default function EnvelopeMarker({ rotation, visible }: EnvelopeMarkerProp
 
                 {/* === Roof rack / mail light === */}
                 <rect x="15" y="2" width="12" height="3.5" rx="1.5" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="0.4" />
-                {/* "MAIL" text on roof sign */}
+                {/* "311" text on roof sign */}
                 <text
                     x="21"
                     y="4.8"
@@ -117,9 +117,9 @@ export default function EnvelopeMarker({ rotation, visible }: EnvelopeMarkerProp
                     fontSize="3"
                     fontWeight="bold"
                     fill="#1e40af"
-                    fontFamily="Arial, sans-serif"
+                    fontFamily="Halant, Georgia, serif"
                 >
-                    MAIL
+                    311
                 </text>
             </svg>
         </motion.div>

@@ -1,15 +1,15 @@
 export const SEVERITY_COLORS: Record<string, string> = {
-  critical: '#ff3b3b',
-  high: '#ff8c00',
-  medium: '#ffd700',
-  low: '#00d4aa',
+  critical: '#B91C1C',
+  high: '#C2410C',
+  medium: '#92400E',
+  low: '#166534',
 };
 
 export const SEVERITY_BG: Record<string, string> = {
-  critical: 'bg-red-500/20 text-red-400 border-red-500/30',
-  high: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
-  medium: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-  low: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+  critical: 'bg-red-700/[0.08] text-red-700 border-red-700/20',
+  high: 'bg-orange-700/[0.08] text-orange-700 border-orange-700/20',
+  medium: 'bg-amber-700/[0.08] text-amber-700 border-amber-700/20',
+  low: 'bg-green-700/[0.08] text-green-700 border-green-700/20',
 };
 
 export const CATEGORY_LABELS: Record<string, string> = {
@@ -20,14 +20,15 @@ export const CATEGORY_LABELS: Record<string, string> = {
 };
 
 export const NEIGHBORHOODS = [
-  { slug: 'downtown-hamilton', name: 'Downtown Hamilton' },
-  { slug: 'james-st-north', name: 'James St North' },
-  { slug: 'barton-village', name: 'Barton Village' },
-  { slug: 'westdale', name: 'Westdale' },
-  { slug: 'crown-point', name: 'Crown Point' },
+  { slug: 'downtown-waterloo', name: 'Downtown Waterloo' },
+  { slug: 'uptown-waterloo', name: 'Uptown Waterloo' },
+  { slug: 'university-district', name: 'University District' },
+  { slug: 'lakeshore', name: 'Lakeshore' },
+  { slug: 'beechwood', name: 'Beechwood' },
 ];
 
-export const HAMILTON_CENTER = { lat: 43.2557, lng: -79.8711 };
+export const WATERLOO_CENTER = { lat: 43.4643, lng: -80.5204 };
+export const HAMILTON_CENTER = WATERLOO_CENTER; // Legacy alias
 
 export const STATUS_LABELS: Record<string, string> = {
   new: 'New',

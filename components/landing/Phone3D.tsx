@@ -81,7 +81,7 @@ export default function Phone3D({ scrollProgress, screen }: Phone3DProps) {
     );
 }
 
-// Feed Screen - Shows pulse feed UI
+// Feed Screen - Shows community feed UI
 function FeedScreen({ scrollProgress }: { scrollProgress: MotionValue<number> }) {
     const feedScrollY = useTransform(scrollProgress, [0.25, 0.45], [0, -200]);
 
@@ -94,14 +94,14 @@ function FeedScreen({ scrollProgress }: { scrollProgress: MotionValue<number> })
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
                     </svg>
-                    <span>Hamilton</span>
+                    <span>Waterloo</span>
                 </div>
             </div>
 
             {/* Header */}
             <div className="px-4 py-2 border-b border-white/5">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-lg font-semibold text-white">Pulse Feed</h1>
+                    <h1 className="text-lg font-semibold text-white">Community Feed</h1>
                     <div
                         className="px-3 py-1.5 rounded-full text-xs font-medium"
                         style={{
@@ -154,7 +154,7 @@ function FeedScreen({ scrollProgress }: { scrollProgress: MotionValue<number> })
                 />
             </motion.div>
 
-            {/* Ask SafePulse button */}
+            {/* Ask NorthReport button */}
             <div className="px-4 py-3 border-t border-white/5">
                 <motion.button
                     className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2"
@@ -168,7 +168,7 @@ function FeedScreen({ scrollProgress }: { scrollProgress: MotionValue<number> })
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <circle cx="12" cy="12" r="10" />
                     </svg>
-                    Ask SafePulse
+                    Ask NorthReport
                 </motion.button>
             </div>
         </div>
@@ -195,7 +195,7 @@ function FeedCard({
 }) {
     const colors = {
         hazard: { bg: "rgba(245,158,11,0.1)", border: "rgba(245,158,11,0.2)", icon: "#f59e0b" },
-        story: { bg: "rgba(99,102,241,0.1)", border: "rgba(99,102,241,0.2)", icon: "#6366f1" },
+        story: { bg: "rgba(139,26,43,0.1)", border: "rgba(139,26,43,0.2)", icon: "#8b1a2b" },
         alert: { bg: "rgba(239,68,68,0.1)", border: "rgba(239,68,68,0.2)", icon: "#ef4444" },
     };
 
@@ -261,7 +261,7 @@ function FeedCard({
             </div>
             {hasMedia && (
                 <div className="mt-2 h-24 rounded-lg bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8b1a2b" strokeWidth="2">
                         <polygon points="5 3 19 12 5 21 5 3" />
                     </svg>
                 </div>
@@ -317,7 +317,7 @@ function VoiceScreen() {
                 transition={{ delay: 0.5 }}
             >
                 <p className="text-lg text-white font-medium mb-2">
-                    &ldquo;Hey SafePulse, there&apos;s a flood on King St.&rdquo;
+                    &ldquo;Hey NorthReport, there&apos;s a flood on King St.&rdquo;
                 </p>
             </motion.div>
 

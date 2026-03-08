@@ -203,10 +203,10 @@ function PhoneScreen({ screenProgress }: { screenProgress: MotionValue<number> }
                     />
                 </div>
 
-                <span className="text-indigo-400 font-semibold text-lg mb-2">Analyzing...</span>
+                <span className="text-crimson-light font-semibold text-lg mb-2">Analyzing...</span>
                 <div className="flex items-center gap-2">
                     <motion.div
-                        className="w-2 h-2 rounded-full bg-indigo-400"
+                        className="w-2 h-2 rounded-full bg-crimson"
                         animate={{ opacity: [0.3, 1, 0.3] }}
                         transition={{ duration: 1, repeat: Infinity }}
                     />

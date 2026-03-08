@@ -175,14 +175,14 @@ export default function IssueDetailPage() {
                                     <div className="flex-1">
                                         <div className="flex items-center gap-3 mb-2">
                                             <span className={`px-3 py-1 rounded-full text-xs font-semibold tracking-wide ${issue.reportCount >= 5
-                                                ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
-                                                : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                                                ? 'bg-crimson/20 text-crimson-light border border-crimson/30'
+                                                : 'bg-crimson/20 text-crimson-light border border-crimson/30'
                                                 }`}>
                                                 {issue.reportCount >= 5 ? 'Cluster' : 'Report'}
                                             </span>
                                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${issue.severity === 'critical' ? 'bg-red-500/20 text-red-400' :
                                                 issue.severity === 'high' ? 'bg-amber-500/20 text-amber-400' :
-                                                    'bg-blue-500/20 text-blue-400'
+                                                    'bg-crimson/20 text-crimson-light'
                                                 }`}>
                                                 {issue.severity === 'critical' ? 'Critical' :
                                                     issue.severity === 'high' ? 'High' : 'Medium'}
@@ -269,7 +269,7 @@ export default function IssueDetailPage() {
                             {issue.reports && issue.reports.length > 0 && (
                                 <div className="glass-card p-6 space-y-4">
                                     <h2 className="text-sm font-semibold text-[var(--text-secondary)] flex items-center gap-2">
-                                        <span className="w-2 h-2 rounded-full bg-cyan-400" /> Citizen Reports ({issue.reports.length})
+                                        <span className="w-2 h-2 rounded-full bg-crimson" /> Citizen Reports ({issue.reports.length})
                                     </h2>
                                     <div className="space-y-3">
                                         {issue.reports.map((report, i) => (
@@ -294,7 +294,7 @@ export default function IssueDetailPage() {
                                                         <div className="flex items-center gap-2 mb-1">
                                                             <span className={`px-2 py-0.5 rounded text-xs font-medium ${report.severity === 'critical' ? 'bg-red-500/20 text-red-400' :
                                                                 report.severity === 'high' ? 'bg-amber-500/20 text-amber-400' :
-                                                                    'bg-blue-500/20 text-blue-400'
+                                                                    'bg-crimson/20 text-crimson-light'
                                                                 }`}>
                                                                 {report.severity === 'critical' ? 'Critical' :
                                                                     report.severity === 'high' ? 'High' : 'Medium'}
@@ -350,7 +350,7 @@ export default function IssueDetailPage() {
                                     </div>
                                 </div>
                                 <p className="text-[10px] text-[var(--text-muted)] text-center border-t border-white/5 pt-3">
-                                    Detected by SafePulse
+                                    Detected by NorthReport
                                 </p>
                             </div>
                         </motion.div>

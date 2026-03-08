@@ -17,13 +17,13 @@ export default function HealthGauge({ label, value, color = 'var(--accent-primar
     <div className="flex flex-col items-center gap-3">
       <div className="relative w-28 h-28">
         <svg className="w-28 h-28 -rotate-90" viewBox="0 0 100 100">
-          {/* Background track */}
+          {/* Background track — light mode */}
           <circle
             cx="50"
             cy="50"
             r={radius}
             fill="none"
-            stroke="rgba(255,255,255,0.06)"
+            stroke="rgba(30,30,30,0.06)"
             strokeWidth="8"
           />
           {/* Progress arc */}
@@ -39,12 +39,12 @@ export default function HealthGauge({ label, value, color = 'var(--accent-primar
             initial={{ strokeDashoffset: circumference }}
             animate={{ strokeDashoffset: circumference - progress }}
             transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
-            style={{ filter: `drop-shadow(0 0 8px ${color})` }}
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
           <motion.span
             className="text-2xl font-bold text-[var(--text-primary)]"
+            style={{ fontFamily: 'var(--font-display)' }}
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.6, duration: 0.3 }}

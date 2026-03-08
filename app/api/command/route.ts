@@ -17,7 +17,32 @@ interface CommandResult {
 function applyKeywordFallback(input: string): CommandResult | null {
   const lowerInput = input.toLowerCase();
 
-  if (lowerInput.includes('stories') || lowerInput.includes('story')) {
+  if (
+    lowerInput.includes('create a report') ||
+    lowerInput.includes('create report') ||
+    lowerInput.includes('make a report') ||
+    lowerInput.includes('make report') ||
+    lowerInput.includes('new report') ||
+    lowerInput.includes('start a report') ||
+    lowerInput.includes('start report') ||
+    lowerInput.includes('take a photo') ||
+    lowerInput.includes('take photo') ||
+    lowerInput.includes('snap a photo') ||
+    lowerInput.includes('report something') ||
+    lowerInput.includes('report an issue') ||
+    lowerInput.includes('report issue')
+  ) {
+    return {
+      intent: 'action',
+      action: 'create_report',
+      targetId: null,
+      payload: { text: null },
+      requiresConfirm: false,
+      confirmPrompt: null,
+      spokenResponse: "Opening camera. Take a photo of the issue."
+    };
+  }
+  else if (lowerInput.includes('stories') || lowerInput.includes('story')) {
     return {
       intent: 'navigate',
       action: 'open_stories',
@@ -130,7 +155,7 @@ function applyKeywordFallback(input: string): CommandResult | null {
       payload: { text: null },
       requiresConfirm: false,
       confirmPrompt: null,
-      spokenResponse: "Opening assisted 311 filing. You can select a category to file a report with the City of Hamilton."
+      spokenResponse: "Opening assisted 311 filing. You can select a category to file a report with the City of Waterloo."
     };
   }
   return null;
@@ -164,14 +189,23 @@ export async function POST(req: NextRequest) {
       // POST-GEMINI OVERRIDE: If transcript contains "report"/"reports" but Gemini
       // returned open_feed, override to open_reports (common misclassification).
       const lowerTranscript = transcript.toLowerCase();
+      const isCreateIntent = lowerTranscript.includes('create') || lowerTranscript.includes('make') || lowerTranscript.includes('new') || lowerTranscript.includes('start') || lowerTranscript.includes('take a photo') || lowerTranscript.includes('snap');
       if (
         (lowerTranscript.includes('report') || lowerTranscript.includes('reports')) &&
         !lowerTranscript.includes('feed') &&
+        !isCreateIntent &&
         result.action === 'open_feed'
       ) {
         console.warn('[COMMAND] Override: transcript mentions "report" but Gemini returned open_feed → forcing open_reports');
         result.action = 'open_reports';
         result.spokenResponse = 'Opening reports.';
+      }
+      // If it's a create intent but Gemini misclassified, force create_report
+      if (isCreateIntent && (lowerTranscript.includes('report') || lowerTranscript.includes('photo') || lowerTranscript.includes('issue')) && result.action !== 'create_report') {
+        console.warn('[COMMAND] Override: create intent detected → forcing create_report');
+        result.action = 'create_report';
+        result.intent = 'action';
+        result.spokenResponse = 'Opening camera. Take a photo of the issue.';
       }
 
       // FALLBACK: If AI returns "unknown" but we detect strong keywords, FORCE it.

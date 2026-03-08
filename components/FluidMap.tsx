@@ -209,7 +209,7 @@ const FluidMap = forwardRef<FluidMapRef, FluidMapProps>(function FluidMap(
         mapboxgl.accessToken = token;
         map.current = new mapboxgl.Map({
             container: mapContainer.current,
-            style: 'mapbox://styles/mapbox/dark-v11',
+            style: 'mapbox://styles/mapbox/light-v11',
             center: userLoc,
             zoom: 15,
             pitch: 45,
@@ -231,7 +231,7 @@ const FluidMap = forwardRef<FluidMapRef, FluidMapProps>(function FluidMap(
                 type: 'fill-extrusion',
                 minzoom: 14,
                 paint: {
-                    'fill-extrusion-color': '#FFFFFF',
+                    'fill-extrusion-color': '#F5F0E1',
                     'fill-extrusion-height': ['get', 'height'],
                     'fill-extrusion-base': ['get', 'min_height'],
                     'fill-extrusion-opacity': 0.8,
@@ -353,10 +353,10 @@ const FluidMap = forwardRef<FluidMapRef, FluidMapProps>(function FluidMap(
                     position: relative;
                     width: 20px;
                     height: 20px;
-                    background: #22D3EE;
+                    background: #8b1a2b;
                     border: 3px solid white;
                     border-radius: 50%;
-                    box-shadow: 0 0 15px rgba(34, 211, 238, 0.8), 0 2px 8px rgba(0,0,0,0.3);
+                    box-shadow: 0 0 15px rgba(139, 26, 43, 0.8), 0 2px 8px rgba(0,0,0,0.3);
                     z-index: 2;
                 }
                 .you-ping {
@@ -365,7 +365,7 @@ const FluidMap = forwardRef<FluidMapRef, FluidMapProps>(function FluidMap(
                     left: 0;
                     width: 20px;
                     height: 20px;
-                    background: rgba(34, 211, 238, 0.4);
+                    background: rgba(139, 26, 43, 0.4);
                     border-radius: 50%;
                     animation: pulse-ring 2s ease-out infinite;
                     transform-origin: center center;
@@ -376,13 +376,13 @@ const FluidMap = forwardRef<FluidMapRef, FluidMapProps>(function FluidMap(
                     position: relative;
                     margin-top: 6px;
                     padding: 3px 10px;
-                    background: #22D3EE;
+                    background: #8b1a2b;
                     color: white;
                     font-size: 10px;
                     font-weight: 700;
                     letter-spacing: 0.5px;
                     border-radius: 10px;
-                    box-shadow: 0 0 10px rgba(34, 211, 238, 0.6), 0 2px 6px rgba(0,0,0,0.3);
+                    box-shadow: 0 0 10px rgba(139, 26, 43, 0.6), 0 2px 6px rgba(0,0,0,0.3);
                     z-index: 2;
                 }
                 
@@ -421,17 +421,18 @@ const FluidMap = forwardRef<FluidMapRef, FluidMapProps>(function FluidMap(
                 .snap-marker-label {
                     margin-top: 6px;
                     padding: 4px 10px;
-                    background: rgba(0,0,0,0.85);
+                    background: rgba(255,255,255,0.95);
                     backdrop-filter: blur(10px);
                     border-radius: 8px;
-                    border: 1px solid rgba(255,255,255,0.15);
+                    border: 1px solid rgba(30,30,30,0.1);
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
                     text-align: center;
                     max-width: 120px;
                     white-space: nowrap;
                     pointer-events: none;
                 }
                 .snap-marker-title {
-                    color: white;
+                    color: #1E1E1E;
                     font-size: 11px;
                     font-weight: 600;
                     line-height: 1.3;
@@ -454,7 +455,7 @@ const FluidMap = forwardRef<FluidMapRef, FluidMapProps>(function FluidMap(
             <div ref={mapContainer} className="w-full h-full" />
 
             {/* Vignette overlay */}
-            <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 50%, transparent 30%, rgba(10,20,35,0.6) 100%)' }} />
+            <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 50%, transparent 40%, rgba(245,240,225,0.4) 100%)' }} />
 
             {/* Loading state */}
             {!isLoaded && <div className="absolute inset-0 flex items-center justify-center bg-[var(--bg-base)]"><div className="w-8 h-8 border-2 border-[var(--accent-primary)] border-t-transparent rounded-full animate-spin" /></div>}

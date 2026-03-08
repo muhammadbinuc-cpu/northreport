@@ -1,9 +1,9 @@
 // Shared wake word patterns and utilities — used by both VoiceListener and useAgentVoice
 
 export const WAKE_PATTERNS = [
-  'hey safepulse', 'hey safe pulse', 'hey safe post', 'hey safepost',
+  'hey northreport', 'hey north report', 'hey north report', 'hey northreport',
   'hey pulse', 'a pulse', 'hey poles', 'hey polls',
-  'hey safe polls', 'a safepulse', 'hey save pulse', 'hey staples',
+  'hey north report', 'a northreport', 'hey north report', 'hey northreport',
   'hey stables', 'hey safe', 'hey saves', 'hey safety', 'hey staple',
   'hey say pulse', 'hey say post',
   "he's safe both", "he's safe", "he is safe", "safe both",

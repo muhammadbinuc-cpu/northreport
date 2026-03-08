@@ -55,7 +55,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
             return Response.json({ error: 'Only draft reports can be updated' }, { status: 400 });
         }
 
-        if (body.status && body.status !== 'submitted') {
+        if (body.status && body.status !== 'submitted' && body.status !== 'deleted') {
             return Response.json({ error: 'Invalid status transition' }, { status: 400 });
         }
 
@@ -64,8 +64,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         };
 
         // Update status if provided
-        if (body.status === 'submitted') {
-            updates.status = 'submitted';
+        if (body.status === 'submitted' || body.status === 'deleted') {
+            updates.status = body.status;
         }
 
         // Update description if provided

@@ -43,7 +43,7 @@ export default function AutoFileViewer({ filingId }: AutoFileViewerProps) {
   if (!filing) {
     return (
       <div className="glass-card p-6 flex items-center gap-3">
-        <div className="w-5 h-5 border-2 border-[#6366f1] border-t-transparent rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-[#8b1a2b] border-t-transparent rounded-full animate-spin" />
         <span className="text-sm">Loading filing status...</span>
       </div>
     );
@@ -80,7 +80,7 @@ export default function AutoFileViewer({ filingId }: AutoFileViewerProps) {
         <p className="text-xs text-[#888]">Agent Log</p>
         {filing.agentLog.map((log, i) => (
           <div key={i} className="flex items-start gap-2 text-xs">
-            <span className="text-[#6366f1] mt-0.5">
+            <span className="text-[#8b1a2b] mt-0.5">
               {i === filing.agentLog.length - 1 && filing.status === 'in_progress' ? (
                 <span className="inline-block w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
               ) : (

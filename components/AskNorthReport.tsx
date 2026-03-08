@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AudioPlayer from './AudioPlayer';
 import type { FeedItem } from './FeedCard';
 
-interface AskSafePulseProps {
+interface AskNorthReportProps {
   item: FeedItem | null;
   isOpen: boolean;
   onClose: () => void;
@@ -19,7 +19,7 @@ interface ExplainResult {
   suggestedNextActions: string[];
 }
 
-export default function AskSafePulse({ item, isOpen, onClose }: AskSafePulseProps) {
+export default function AskNorthReport({ item, isOpen, onClose }: AskNorthReportProps) {
   const [result, setResult] = useState<ExplainResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [question, setQuestion] = useState('');
@@ -81,7 +81,7 @@ export default function AskSafePulse({ item, isOpen, onClose }: AskSafePulseProp
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-[#6366f1]">Ask SafePulse</h3>
+              <h3 className="text-lg font-semibold text-[#8b1a2b]">Ask NorthReport</h3>
               <button onClick={handleClose} className="text-[#888] hover:text-white text-xl">
                 ✕
               </button>
@@ -91,9 +91,9 @@ export default function AskSafePulse({ item, isOpen, onClose }: AskSafePulseProp
 
             {loading && (
               <div className="flex items-center gap-2 py-8">
-                <div className="w-2 h-2 bg-[#6366f1] rounded-full animate-bounce" />
-                <div className="w-2 h-2 bg-[#6366f1] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                <div className="w-2 h-2 bg-[#6366f1] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                <div className="w-2 h-2 bg-[#8b1a2b] rounded-full animate-bounce" />
+                <div className="w-2 h-2 bg-[#8b1a2b] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                <div className="w-2 h-2 bg-[#8b1a2b] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
                 <span className="text-sm text-[#888] ml-2">Analyzing...</span>
               </div>
             )}
@@ -106,7 +106,7 @@ export default function AskSafePulse({ item, isOpen, onClose }: AskSafePulseProp
                   <ul className="space-y-1">
                     {result.summaryBullets.map((b, i) => (
                       <li key={i} className="text-sm flex gap-2">
-                        <span className="text-[#6366f1]">•</span>
+                        <span className="text-[#8b1a2b]">•</span>
                         {b}
                       </li>
                     ))}
@@ -157,7 +157,7 @@ export default function AskSafePulse({ item, isOpen, onClose }: AskSafePulseProp
                   <h4 className="text-xs font-semibold text-[#888] uppercase mb-2">Suggested Actions</h4>
                   <ul className="space-y-1">
                     {result.suggestedNextActions.map((a, i) => (
-                      <li key={i} className="text-sm text-[#6366f1]">
+                      <li key={i} className="text-sm text-[#8b1a2b]">
                         → {a}
                       </li>
                     ))}
@@ -180,7 +180,7 @@ export default function AskSafePulse({ item, isOpen, onClose }: AskSafePulseProp
                     }
                   }}
                   placeholder="Ask a follow-up..."
-                  className="flex-1 bg-white/5 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-[#6366f1]"
+                  className="flex-1 bg-white/5 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-[#8b1a2b]"
                 />
                 <button
                   onClick={() => {
@@ -189,7 +189,7 @@ export default function AskSafePulse({ item, isOpen, onClose }: AskSafePulseProp
                       setQuestion('');
                     }
                   }}
-                  className="px-3 py-2 bg-[#6366f1] rounded-lg text-sm"
+                  className="px-3 py-2 bg-[#8b1a2b] rounded-lg text-sm"
                 >
                   Ask
                 </button>

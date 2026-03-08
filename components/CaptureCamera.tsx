@@ -387,9 +387,9 @@ export default function CaptureCamera({ onClose }: CaptureCameraProps) {
                   onClick={navigateToReport}
                   className="w-full py-4 rounded-2xl font-semibold flex items-center justify-center gap-3 text-base backdrop-blur-xl"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(34, 211, 238, 0.9) 0%, rgba(6, 182, 212, 0.9) 100%)',
+                    background: 'linear-gradient(135deg, rgba(139, 26, 43, 0.9) 0%, rgba(6, 182, 212, 0.9) 100%)',
                     color: '#0A0E14',
-                    boxShadow: '0 0 30px rgba(34, 211, 238, 0.3), 0 8px 32px rgba(0,0,0,0.3)',
+                    boxShadow: '0 0 30px rgba(139, 26, 43, 0.3), 0 8px 32px rgba(0,0,0,0.3)',
                   }}
                 >
                   <FileText className="w-5 h-5" />
@@ -430,8 +430,8 @@ export default function CaptureCamera({ onClose }: CaptureCameraProps) {
                 exit={{ opacity: 0 }}
                 className="absolute inset-0 pointer-events-none rounded-none"
                 style={{
-                  boxShadow: 'inset 0 0 40px rgba(34, 211, 238, 0.35), inset 0 0 80px rgba(34, 211, 238, 0.15)',
-                  border: '2px solid rgba(34, 211, 238, 0.5)',
+                  boxShadow: 'inset 0 0 40px rgba(139, 26, 43, 0.35), inset 0 0 80px rgba(139, 26, 43, 0.15)',
+                  border: '2px solid rgba(139, 26, 43, 0.5)',
                   zIndex: 50,
                 }}
               />
@@ -458,7 +458,7 @@ function CameraVoiceHUD({ voiceState, transcript }: { voiceState: 'idle' | 'list
             style={{ background: 'rgba(0,0,0,0.5)' }}
           >
             <Mic className="w-4 h-4 text-white/40" />
-            <span className="text-xs text-white/40 font-medium">Say &quot;Hey SafePulse&quot;</span>
+            <span className="text-xs text-white/40 font-medium">Say &quot;Hey NorthReport&quot;</span>
           </motion.div>
         )}
         {voiceState === 'listening' && (
@@ -468,27 +468,27 @@ function CameraVoiceHUD({ voiceState, transcript }: { voiceState: 'idle' | 'list
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             className="flex items-center gap-3 px-5 py-2.5 rounded-full backdrop-blur-md"
-            style={{ background: 'rgba(34, 211, 238, 0.15)', border: '1px solid rgba(34, 211, 238, 0.4)' }}
+            style={{ background: 'rgba(139, 26, 43, 0.15)', border: '1px solid rgba(139, 26, 43, 0.4)' }}
           >
             <motion.div
               animate={{ scale: [1, 1.3, 1] }}
               transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
             >
-              <Mic className="w-4 h-4 text-cyan-400" />
+              <Mic className="w-4 h-4 text-crimson-light" />
             </motion.div>
             {/* Sound bars */}
             <div className="flex items-center gap-0.5 h-4">
               {[0, 1, 2, 3].map(i => (
                 <motion.div
                   key={i}
-                  className="w-[3px] rounded-full bg-cyan-400"
+                  className="w-[3px] rounded-full bg-crimson"
                   animate={{ height: ['6px', '16px', '6px'] }}
                   transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15, ease: 'easeInOut' }}
                 />
               ))}
             </div>
             {transcript && (
-              <span className="text-xs text-cyan-300 font-medium max-w-[200px] truncate">{transcript}</span>
+              <span className="text-xs text-crimson-light font-medium max-w-[200px] truncate">{transcript}</span>
             )}
           </motion.div>
         )}
@@ -499,10 +499,10 @@ function CameraVoiceHUD({ voiceState, transcript }: { voiceState: 'idle' | 'list
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             className="flex items-center gap-2 px-5 py-2.5 rounded-full backdrop-blur-md"
-            style={{ background: 'rgba(34, 211, 238, 0.2)', border: '1px solid rgba(34, 211, 238, 0.5)' }}
+            style={{ background: 'rgba(139, 26, 43, 0.2)', border: '1px solid rgba(139, 26, 43, 0.5)' }}
           >
-            <Check className="w-4 h-4 text-cyan-400" />
-            <span className="text-xs text-cyan-300 font-medium">{transcript || 'Done'}</span>
+            <Check className="w-4 h-4 text-crimson-light" />
+            <span className="text-xs text-crimson-light font-medium">{transcript || 'Done'}</span>
           </motion.div>
         )}
       </AnimatePresence>
@@ -515,7 +515,7 @@ function ViewfinderOverlay() {
   const cornerSize = 40;
   const strokeWidth = 3;
   const offset = 48;
-  const color = 'rgba(34, 211, 238, 0.6)';
+  const color = 'rgba(139, 26, 43, 0.6)';
 
   return (
     <div className="absolute inset-0 pointer-events-none">
@@ -570,7 +570,7 @@ function EducatePanel({
           animate={{ scale: [1, 1.15, 1] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
         >
-          <BookOpen className="w-12 h-12 text-purple-400" />
+          <BookOpen className="w-12 h-12 text-crimson-light" />
         </motion.div>
         <p className="text-white/80 text-sm font-medium">Learning about this...</p>
       </motion.div>
@@ -618,7 +618,7 @@ function EducatePanel({
         <div className="flex items-center gap-4">
           <img src={imageBase64} alt="Captured" className="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
           <div>
-            <p className="text-xs text-purple-400 font-semibold uppercase tracking-wider">Identified</p>
+            <p className="text-xs text-crimson-light font-semibold uppercase tracking-wider">Identified</p>
             <h3 className="text-xl font-bold text-[var(--text-primary)]">{result.identified_subject}</h3>
           </div>
         </div>
@@ -626,7 +626,7 @@ function EducatePanel({
         {/* Description */}
         <div className="rounded-xl p-4 space-y-2" style={{ background: 'var(--bg-glass)', border: '1px solid var(--border-glass)' }}>
           <div className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
-            <Info className="w-4 h-4 text-cyan-400" />
+            <Info className="w-4 h-4 text-crimson-light" />
             What is this?
           </div>
           <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{result.description}</p>
@@ -635,7 +635,7 @@ function EducatePanel({
         {/* Community Impact */}
         <div className="rounded-xl p-4 space-y-2" style={{ background: 'var(--bg-glass)', border: '1px solid var(--border-glass)' }}>
           <div className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
-            <svg className="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="w-4 h-4 text-crimson-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
               <circle cx="9" cy="7" r="4" />
               <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
@@ -706,7 +706,7 @@ function EducatePanel({
         <button
           onClick={onSwitchToReport}
           className="flex-1 py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all"
-          style={{ background: 'rgba(34, 211, 238, 0.15)', color: 'rgb(34, 211, 238)', border: '1px solid rgba(34, 211, 238, 0.3)' }}
+          style={{ background: 'rgba(139, 26, 43, 0.15)', color: 'rgb(34, 211, 238)', border: '1px solid rgba(139, 26, 43, 0.3)' }}
         >
           <FileText className="w-4 h-4" />
           Report This

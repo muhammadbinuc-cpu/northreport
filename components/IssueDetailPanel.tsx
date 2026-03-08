@@ -13,10 +13,10 @@ interface IssueDetailPanelProps {
 }
 
 const SEVERITY_COLORS: Record<string, string> = {
-    critical: '#ff3b3b',
-    high: '#ff8c00',
-    medium: '#ffd700',
-    low: '#00d4aa',
+    critical: 'var(--severity-critical)',
+    high: 'var(--severity-high)',
+    medium: 'var(--severity-medium)',
+    low: 'var(--severity-low)',
 };
 
 export default function IssueDetailPanel({ issue, onClose, onReply, onUpvoteIssue, onUpvoteComment }: IssueDetailPanelProps) {
@@ -115,7 +115,7 @@ export default function IssueDetailPanel({ issue, onClose, onReply, onUpvoteIssu
                 style={{
                     background: 'var(--bg-elevated)',
                     borderLeft: '1px solid var(--border-subtle)',
-                    boxShadow: '-10px 0 40px rgba(0,0,0,0.4)',
+                    boxShadow: '-10px 0 40px rgba(0,0,0,0.1)',
                 }}
             >
                 {/* Header */}
@@ -159,9 +159,9 @@ export default function IssueDetailPanel({ issue, onClose, onReply, onUpvoteIssu
                             whileTap={{ scale: 0.9 }}
                             className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all"
                             style={{
-                                background: issueUpvoted ? '#F472B6' : 'var(--bg-glass)',
+                                background: issueUpvoted ? 'var(--accent-primary)' : 'var(--bg-input)',
                                 color: issueUpvoted ? 'white' : 'var(--text-primary)',
-                                border: '1px solid var(--border-glass)',
+                                border: '1px solid var(--border-hairline)',
                             }}
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill={issueUpvoted ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
@@ -390,7 +390,7 @@ function CommentCard({
                     onClick={onUpvote}
                     whileTap={{ scale: 0.8 }}
                     className="flex items-center gap-1 text-xs transition-colors"
-                    style={{ color: isUpvoted ? '#F472B6' : 'var(--text-muted)' }}
+                    style={{ color: isUpvoted ? 'var(--accent-primary)' : 'var(--text-muted)' }}
                 >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill={isUpvoted ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />

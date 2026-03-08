@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { NEIGHBORHOODS } from '@/lib/constants';
 
 // SVG Icons
@@ -43,35 +42,27 @@ export default function TopBar({
 
     return (
         <header
-            className="flex items-center gap-4 px-6 py-3 backdrop-blur-xl"
-            style={{
-                marginLeft: 'var(--nav-width)',
-                height: 'var(--topbar-height)',
-                background: 'var(--bg-glass)',
-                borderBottom: '1px solid var(--border-glass)',
-            }}
+            className="flex items-center gap-4 px-6 py-4"
         >
             {/* Title */}
             <h1
-                className="text-lg font-semibold"
+                className="text-2xl font-semibold"
                 style={{
                     fontFamily: 'var(--font-display)',
                     color: 'var(--text-primary)',
+                    letterSpacing: '-0.01em',
                 }}
             >
-                {title || 'Live City'}
-                {!title && (
-                    <span style={{ color: 'var(--accent-primary)' }}> Map</span>
-                )}
+                {title || 'City Map'}
             </h1>
 
             {/* Neighborhood Selector */}
             {neighborhood && onNeighborhoodChange && (
                 <div
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer transition-all"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer transition-colors duration-150"
                     style={{
                         background: 'var(--bg-hover)',
-                        border: '1px solid var(--border-glass)',
+                        border: '1px solid rgba(30,30,30,0.06)',
                     }}
                 >
                     <span style={{ color: 'var(--accent-primary)' }}>{icons.location}</span>
@@ -85,7 +76,7 @@ export default function TopBar({
                         }}
                     >
                         {NEIGHBORHOODS.map((n) => (
-                            <option key={n.slug} value={n.slug} style={{ background: 'var(--bg-elevated)' }}>
+                            <option key={n.slug} value={n.slug} style={{ background: 'var(--bg-card)' }}>
                                 {n.name}
                             </option>
                         ))}
@@ -102,8 +93,8 @@ export default function TopBar({
                 <div
                     className="flex items-center gap-2 px-4 py-2 rounded-lg w-72"
                     style={{
-                        background: 'var(--bg-card)',
-                        border: '1px solid var(--border-glass)',
+                        background: 'var(--bg-input)',
+                        border: '1px solid rgba(30,30,30,0.06)',
                     }}
                 >
                     <span style={{ color: 'var(--text-muted)' }}>{icons.search}</span>
@@ -121,23 +112,20 @@ export default function TopBar({
                 </div>
             )}
 
-            {/* Live Count Pill */}
+            {/* Live Count -- subtle */}
             {typeof liveCount === 'number' && (
-                <motion.div
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium"
+                <div
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
                     style={{
-                        background: 'rgba(34, 197, 94, 0.15)',
-                        color: '#22C55E',
+                        color: 'var(--text-muted)',
                     }}
                 >
                     <span
-                        className="w-2 h-2 rounded-full animate-pulse"
-                        style={{ background: '#22C55E' }}
+                        className="w-1.5 h-1.5 rounded-full"
+                        style={{ background: 'var(--status-success)' }}
                     />
                     {liveCount} live
-                </motion.div>
+                </div>
             )}
         </header>
     );

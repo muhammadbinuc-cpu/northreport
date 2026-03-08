@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
         .get();
       reports = reportsSnapshot.docs
         .map(doc => ({ id: doc.id, ...doc.data() }))
-        .filter((r: any) => r.hidden !== true);
+        .filter((r: any) => r.hidden !== true && r.status !== 'deleted');
     }
 
     // Batch lookup user display names

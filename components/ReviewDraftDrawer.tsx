@@ -35,7 +35,7 @@ const SEVERITY_COLORS: Record<string, string> = {
 export default function ReviewDraftDrawer({ draft, onClose, onFileComplete }: ReviewDraftDrawerProps) {
     const [phase, setPhase] = useState<Phase>('review');
     const [editedDescription, setEditedDescription] = useState(draft.description || '');
-    const [reportLocation, setReportLocation] = useState({ lat: 43.2557, lng: -79.8711 });
+    const [reportLocation, setReportLocation] = useState({ lat: 43.4643, lng: -80.5204 });
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
 
@@ -70,7 +70,7 @@ export default function ReviewDraftDrawer({ draft, onClose, onFileComplete }: Re
         setPhase('preview_311');
     };
 
-    // Opens real Hamilton URL and immediately goes to confirm phase (no loading screen)
+    // Opens real Waterloo URL and immediately goes to confirm phase (no loading screen)
     const handleSubmitToCity = () => {
         window.open(
             'https://www.hamilton.ca/home-neighbourhood/getting-around/streets-sidewalks/road-sidewalk-maintenance',
@@ -245,7 +245,7 @@ export default function ReviewDraftDrawer({ draft, onClose, onFileComplete }: Re
                                     value={editedDescription}
                                     onChange={(e) => setEditedDescription(e.target.value)}
                                     rows={4}
-                                    className="w-full px-4 py-3 rounded-lg bg-transparent border border-[var(--border-subtle)] text-sm text-[var(--text-primary)] placeholder-white/40 focus:outline-none focus:border-cyan-500/50 transition-all resize-none min-h-[120px]"
+                                    className="w-full px-4 py-3 rounded-lg bg-transparent border border-[var(--border-subtle)] text-sm text-[var(--text-primary)] placeholder-white/40 focus:outline-none focus:border-crimson/50 transition-all resize-none min-h-[120px]"
                                     placeholder="Describe the issue..."
                                 />
                             </div>
@@ -261,7 +261,7 @@ export default function ReviewDraftDrawer({ draft, onClose, onFileComplete }: Re
                             {/* Location */}
                             {draft.locationApprox?.label && (
                                 <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-                                    <MapPin className="w-4 h-4 text-cyan-400" />
+                                    <MapPin className="w-4 h-4 text-crimson-light" />
                                     <span>{draft.locationApprox.label}</span>
                                 </div>
                             )}
@@ -269,7 +269,7 @@ export default function ReviewDraftDrawer({ draft, onClose, onFileComplete }: Re
                             {/* Primary Action */}
                             <button
                                 onClick={handlePreview311}
-                                className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium text-sm flex items-center justify-center gap-2 hover:brightness-110 transition-all shadow-lg shadow-cyan-500/20"
+                                className="w-full py-3 rounded-xl bg-gradient-to-r from-crimson to-crimson-dark text-white font-medium text-sm flex items-center justify-center gap-2 hover:brightness-110 transition-all shadow-lg shadow-crimson/20"
                             >
                                 <Eye className="w-4 h-4" />
                                 Preview 311 Form
@@ -374,7 +374,7 @@ export default function ReviewDraftDrawer({ draft, onClose, onFileComplete }: Re
                                         onClick={handleSubmitToCity}
                                         className="flex-[2] py-3 rounded-xl font-medium bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 text-white transition-all flex items-center justify-center gap-2"
                                     >
-                                        🏛️ Submit to City of Hamilton
+                                        🏛️ Submit to City of Waterloo
                                         <ExternalLink className="w-3 h-3 opacity-70" />
                                     </button>
                                 </div>
@@ -405,7 +405,7 @@ export default function ReviewDraftDrawer({ draft, onClose, onFileComplete }: Re
                                 Did you complete the 311 submission?
                             </h3>
                             <p className="text-sm text-[var(--text-secondary)] text-center mb-2 max-w-sm">
-                                Confirm only if you successfully submitted the report on the City of Hamilton website.
+                                Confirm only if you successfully submitted the report on the City of Waterloo website.
                             </p>
 
                             {/* Context card */}

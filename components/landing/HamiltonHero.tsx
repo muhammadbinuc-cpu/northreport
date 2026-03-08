@@ -9,7 +9,7 @@ interface HamiltonHeroProps {
     scrollProgress: MotionValue<number>;
 }
 
-// Random pulse locations around Hamilton
+// Random pulse locations around Waterloo
 const PULSE_SIGNALS = [
     { lng: -79.866, lat: 43.256, delay: 0 },
     { lng: -79.877, lat: 43.252, delay: 2 },
@@ -140,7 +140,7 @@ export default function HamiltonHero({ scrollProgress }: HamiltonHeroProps) {
                 style={{
                     background: `
             linear-gradient(to bottom, rgba(10,10,15,0.3) 0%, rgba(10,10,15,0.6) 50%, rgba(10,10,15,0.9) 100%),
-            radial-gradient(ellipse at 30% 20%, rgba(99,102,241,0.08) 0%, transparent 50%)
+            radial-gradient(ellipse at 30% 20%, rgba(139,26,43,0.08) 0%, transparent 50%)
           `,
                 }}
             />

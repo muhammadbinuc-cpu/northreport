@@ -45,7 +45,7 @@ export default function ContentComposer({ isOpen, onClose, onCreated }: ContentC
         latitude = pos.coords.latitude;
         longitude = pos.coords.longitude;
       } catch {
-        // Use Hamilton center as default
+        // Use Waterloo center as default
       }
 
       // Submit to the correct endpoint based on type
@@ -109,7 +109,7 @@ export default function ContentComposer({ isOpen, onClose, onCreated }: ContentC
               <button
                 onClick={() => setType('post')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  type === 'post' ? 'bg-[#6366f1] text-white' : 'bg-white/10 text-[#888]'
+                  type === 'post' ? 'bg-[#8b1a2b] text-white' : 'bg-white/10 text-[#888]'
                 }`}
               >
                 Post (Permanent)
@@ -117,7 +117,7 @@ export default function ContentComposer({ isOpen, onClose, onCreated }: ContentC
               <button
                 onClick={() => setType('story')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  type === 'story' ? 'bg-[#6366f1] text-white' : 'bg-white/10 text-[#888]'
+                  type === 'story' ? 'bg-[#8b1a2b] text-white' : 'bg-white/10 text-[#888]'
                 }`}
               >
                 Story (24h)
@@ -129,7 +129,7 @@ export default function ContentComposer({ isOpen, onClose, onCreated }: ContentC
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
               placeholder="What's happening in your neighborhood?"
-              className="w-full bg-white/5 rounded-xl p-3 text-sm outline-none resize-none h-28 focus:ring-1 focus:ring-[#6366f1]"
+              className="w-full bg-white/5 rounded-xl p-3 text-sm outline-none resize-none h-28 focus:ring-1 focus:ring-[#8b1a2b]"
               maxLength={500}
             />
             <div className="text-xs text-[#888] text-right">{caption.length}/500</div>
@@ -166,7 +166,7 @@ export default function ContentComposer({ isOpen, onClose, onCreated }: ContentC
             <button
               onClick={handleSubmit}
               disabled={loading || !caption.trim()}
-              className="w-full py-3 bg-[#6366f1] hover:bg-[#5558e6] rounded-xl text-sm font-semibold transition-colors disabled:opacity-50"
+              className="w-full py-3 bg-[#8b1a2b] hover:bg-[#7a0f1e] rounded-xl text-sm font-semibold transition-colors disabled:opacity-50"
             >
               {loading ? 'Sharing...' : `Share ${type === 'story' ? 'Story' : 'Post'}`}
             </button>

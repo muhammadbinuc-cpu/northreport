@@ -6,7 +6,7 @@ interface MapGridProps {
     scrollProgress: MotionValue<number>;
 }
 
-// Pulse signal positions (McMaster/Hamilton area)
+// Pulse signal positions (University of Waterloo area)
 const PULSE_SIGNALS = [
     { x: 35, y: 42, delay: 0, size: 1 },
     { x: 52, y: 38, delay: 0.3, size: 0.8 },
@@ -73,12 +73,12 @@ export default function MapGrid({ scrollProgress }: MapGridProps) {
                         className="absolute inset-0 rounded-2xl"
                         style={{
                             background: `
-                linear-gradient(rgba(99,102,241,0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(99,102,241,0.1) 1px, transparent 1px)
+                linear-gradient(rgba(139,26,43,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139,26,43,0.1) 1px, transparent 1px)
               `,
                             backgroundSize: "40px 40px",
-                            border: "1px solid rgba(99,102,241,0.2)",
-                            boxShadow: "0 0 60px rgba(99,102,241,0.1), inset 0 0 60px rgba(0,0,0,0.5)",
+                            border: "1px solid rgba(139,26,43,0.2)",
+                            boxShadow: "0 0 60px rgba(139,26,43,0.1), inset 0 0 60px rgba(0,0,0,0.5)",
                         }}
                     />
 
@@ -86,8 +86,8 @@ export default function MapGrid({ scrollProgress }: MapGridProps) {
                     <div
                         className="absolute top-4 left-4 px-3 py-1.5 rounded-lg text-xs font-mono tracking-wider"
                         style={{
-                            background: "rgba(99,102,241,0.15)",
-                            border: "1px solid rgba(99,102,241,0.3)",
+                            background: "rgba(139,26,43,0.15)",
+                            border: "1px solid rgba(139,26,43,0.3)",
                             color: "#a5b4fc",
                         }}
                     >
@@ -177,7 +177,7 @@ export default function MapGrid({ scrollProgress }: MapGridProps) {
                         <span className="text-white"> citizens.</span>
                     </p>
                     <p className="text-gray-500 text-lg">
-                        Hamilton&apos;s pulse, visualized in real-time.
+                        Waterloo's pulse, visualized in real-time.
                     </p>
                 </motion.div>
             </div>

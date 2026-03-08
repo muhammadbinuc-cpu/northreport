@@ -69,7 +69,7 @@ function NotificationToast({
     }, [notification.id, notification.issueId, onClick, onDismiss]);
 
     const typeColors = {
-        reply: '#22D3EE',
+        reply: '#8b1a2b',
         upvote: '#F472B6',
         new_report: '#FBBF24',
     };

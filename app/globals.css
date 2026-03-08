@@ -22,7 +22,7 @@
   /* Surfaces */
   --bg-base: var(--palette-cream);           /* Page canvas */
   --bg-elevated: var(--palette-cream);       /* Secondary surfaces */
-  --bg-card: var(--palette-white);           /* Primary cards */
+  --bg-card: var(--palette-cream);           /* Cards match page canvas */
   --bg-glass: var(--palette-white);          /* Legacy: was rgba dark, now solid white */
   --bg-hover: rgba(107, 15, 26, 0.05);      /* Subtle maroon tint on hover */
   --bg-input: var(--palette-ivory);          /* Input/text area backgrounds */
@@ -98,12 +98,13 @@
   --radius-full: 9999px;
 
   /* ─── Typography ─── */
-  --font-display: 'Outfit', system-ui, sans-serif;
-  --font-utility: 'Inter', system-ui, sans-serif;
+  --font-display: var(--font-halant), Georgia, serif;
+  --font-utility: var(--font-halant), Georgia, serif;
 
   /* ─── Layout ─── */
-  --nav-width: 72px;
+  --nav-width: 0px;
   --topbar-height: 56px;
+  --main-nav-height: 56px;
   --drawer-width: 400px;
   --feed-max-width: 520px;
 
@@ -244,18 +245,17 @@ body {
   border: 1px solid var(--border-hairline);
 }
 
-/* Glass Card (migrated from animations.css -- solid surface for light mode) */
+/* Glass Card (modern minimal -- clean white surface) */
 .glass-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-glass-md);
+  background: var(--palette-cream);
+  border: 1px solid rgba(30, 30, 30, 0.06);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   transition: all var(--duration-fast) var(--ease-smooth);
-  /* No backdrop-blur -- solid surface for light mode */
 }
 
 .glass-card:hover {
-  box-shadow: var(--shadow-glass-lg);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

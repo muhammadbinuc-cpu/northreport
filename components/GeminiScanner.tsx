@@ -298,7 +298,7 @@ export default function GeminiScanner() {
 
                     {/* Department */}
                     <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-                      <Building2 className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+                      <Building2 className="w-4 h-4 text-crimson-light flex-shrink-0" />
                       <span>{analysis.department}</span>
                     </div>
 
@@ -317,7 +317,7 @@ export default function GeminiScanner() {
                         <button
                           onClick={generateDescription}
                           disabled={generatingDesc}
-                          className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-md bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 transition-colors disabled:opacity-50"
+                          className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-md bg-crimson/10 text-crimson-light hover:bg-crimson/20 transition-colors disabled:opacity-50"
                         >
                           {generatingDesc ? (
                             <Loader2 className="w-3 h-3 animate-spin" />
@@ -331,7 +331,7 @@ export default function GeminiScanner() {
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         rows={3}
-                        className="w-full px-3 py-2 rounded-lg text-sm resize-none focus:outline-none focus:ring-1 focus:ring-cyan-500/40 transition-all"
+                        className="w-full px-3 py-2 rounded-lg text-sm resize-none focus:outline-none focus:ring-1 focus:ring-crimson/40 transition-all"
                         style={{
                           background: 'var(--bg-glass)',
                           color: 'var(--text-primary)',
