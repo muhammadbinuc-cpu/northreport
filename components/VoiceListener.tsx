@@ -24,14 +24,18 @@ const EXIT_WORDS = /\b(exit|stop|quit|turn off|shut up|close)\b/i;
 
 // Wake word patterns - various ways "hey northreport" might be heard (sorted by length for correct matching)
 const WAKE_PATTERNS = [
-  'hey northreport', 'hey north report', 'hey north report', 'hey northreport',
-  'hey pulse', 'a pulse', 'hey poles', 'hey polls',
-  'hey north report', 'a northreport', 'hey north report', 'hey northreport',
-  'hey stables', 'hey safe', 'hey saves', 'hey safety', 'hey staple',
-  'hey say pulse', 'hey say post',
-  "he's safe both", "he's safe", "he is safe", "safe both",
-  "say pulse", "safe pulse", "safe post", "safe poles",
-  "say poles", "say post", "say posts", "hey state", "hey stay"
+  'hey north report', 'hey northreport',
+  'north report', 'northreport',
+  'hey north reports', 'north reports',
+  'nor report', 'nor reports',
+  'hey nor report', 'hey nor reports',
+  'north repo', 'hey north repo',
+  'north repor', 'hey north repor',
+  'north import', 'hey north import',
+  'north airport', 'hey north airport',
+  'north resort', 'hey north resort',
+  'north support', 'hey north support',
+  'nor import', 'nor airport',
 ].sort((a, b) => b.length - a.length);
 
 // Strip wake patterns from command text
@@ -164,9 +168,14 @@ export default function VoiceListener({ enabled }: { enabled: boolean }) {
           break;
         case 'create_report':
           router.push('/report');
-          // Give the page time to mount, then trigger camera open
           setTimeout(() => {
             window.dispatchEvent(new CustomEvent('northreport:open-camera'));
+          }, 800);
+          break;
+        case 'educate':
+          router.push('/report');
+          setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('northreport:open-camera', { detail: { mode: 'educate' } }));
           }, 800);
           break;
         case 'analyze_report':
@@ -422,14 +431,14 @@ export default function VoiceListener({ enabled }: { enabled: boolean }) {
             }
           }, 5000);
 
-          // Start/reset 3-second silence timer
+          // Start/reset 1.5-second silence timer for snappier response
           if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
           silenceTimerRef.current = setTimeout(() => {
-            console.log('[VOICE] 3s silence - sending command:', commandBufferRef.current);
+            console.log('[VOICE] 1.5s silence - sending command:', commandBufferRef.current);
             if (commandBufferRef.current) {
               processCommandRef.current(commandBufferRef.current);
             }
-          }, 3000);
+          }, 1500);
         }
       }
     };

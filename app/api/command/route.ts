@@ -30,7 +30,9 @@ function applyKeywordFallback(input: string): CommandResult | null {
     lowerInput.includes('snap a photo') ||
     lowerInput.includes('report something') ||
     lowerInput.includes('report an issue') ||
-    lowerInput.includes('report issue')
+    lowerInput.includes('report issue') ||
+    lowerInput.includes('file a report') ||
+    lowerInput.includes('file report')
   ) {
     return {
       intent: 'action',
@@ -118,6 +120,24 @@ function applyKeywordFallback(input: string): CommandResult | null {
       requiresConfirm: false,
       confirmPrompt: null,
       spokenResponse: "Going back."
+    };
+  }
+  // Educate me — open camera in educate mode
+  else if (
+    lowerInput.includes('educate') ||
+    lowerInput.includes('teach me') ||
+    lowerInput.includes('what is this') ||
+    lowerInput.includes('learn about') ||
+    lowerInput.includes('tell me about')
+  ) {
+    return {
+      intent: 'action',
+      action: 'educate',
+      targetId: null,
+      payload: { text: null },
+      requiresConfirm: false,
+      confirmPrompt: null,
+      spokenResponse: "Opening camera in educate mode. Point at something and I'll explain it."
     };
   }
   // Analyze with AI agent (report page)
