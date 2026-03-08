@@ -13,172 +13,49 @@ interface CommandResult {
   spokenResponse: string | null;
 }
 
-// Helper to strip wake words and apply keyword fallback
-function applyKeywordFallback(input: string): CommandResult | null {
-  const lowerInput = input.toLowerCase();
+function buildResult(action: string, spokenResponse: string): CommandResult {
+  return {
+    intent: 'action',
+    action,
+    targetId: null,
+    payload: { text: null },
+    requiresConfirm: false,
+    confirmPrompt: null,
+    spokenResponse,
+  };
+}
 
+const COMMANDS: Record<string, { action: string; response: string }> = {
+  file_report: { action: 'file_report', response: 'Filing a report. Opening camera now.' },
+  take_photo: { action: 'take_photo', response: 'Opening camera.' },
+  educate: { action: 'educate', response: 'Opening educate mode. Point at something.' },
+  submit: { action: 'submit', response: 'Submitting your report.' },
+};
+
+function keywordFallback(text: string): string {
+  const lower = text.toLowerCase();
+
+  if (lower.includes('submit') || lower.includes('send it') || lower.includes('go ahead') || lower.includes('finalize') || lower.includes('confirm')) {
+    return 'submit';
+  }
   if (
-    lowerInput.includes('create a report') ||
-    lowerInput.includes('create report') ||
-    lowerInput.includes('make a report') ||
-    lowerInput.includes('make report') ||
-    lowerInput.includes('new report') ||
-    lowerInput.includes('start a report') ||
-    lowerInput.includes('start report') ||
-    lowerInput.includes('take a photo') ||
-    lowerInput.includes('take photo') ||
-    lowerInput.includes('snap a photo') ||
-    lowerInput.includes('report something') ||
-    lowerInput.includes('report an issue') ||
-    lowerInput.includes('report issue') ||
-    lowerInput.includes('file a report') ||
-    lowerInput.includes('file report')
+    lower.includes('photo') || lower.includes('picture') ||
+    lower.includes('image') || lower.includes('camera') ||
+    lower.includes('snap') || lower.includes('capture') ||
+    lower.includes('photograph')
   ) {
-    return {
-      intent: 'action',
-      action: 'create_report',
-      targetId: null,
-      payload: { text: null },
-      requiresConfirm: false,
-      confirmPrompt: null,
-      spokenResponse: "Opening camera. Take a photo of the issue."
-    };
+    return 'take_photo';
   }
-  else if (lowerInput.includes('stories') || lowerInput.includes('story')) {
-    return {
-      intent: 'navigate',
-      action: 'open_stories',
-      targetId: null,
-      payload: { text: null },
-      requiresConfirm: false,
-      confirmPrompt: null,
-      spokenResponse: "Opening stories."
-    };
-  }
-  else if (lowerInput.includes('report') || lowerInput.includes('issues') || lowerInput.includes('problem')) {
-    return {
-      intent: 'navigate',
-      action: 'open_reports',
-      targetId: null,
-      payload: { text: null },
-      requiresConfirm: false,
-      confirmPrompt: null,
-      spokenResponse: "Opening reports."
-    };
-  }
-  else if (lowerInput.includes('post') || lowerInput.includes('pose') || lowerInput.includes('posts')) {
-    return {
-      intent: 'navigate',
-      action: 'open_posts',
-      targetId: null,
-      payload: { text: null },
-      requiresConfirm: false,
-      confirmPrompt: null,
-      spokenResponse: "Opening posts."
-    };
-  }
-  else if (lowerInput.includes('feed') || lowerInput.includes('home')) {
-    console.warn('[COMMAND] Fallback: Forcing "open_feed" based on keyword match');
-    return {
-      intent: 'navigate',
-      action: 'open_feed',
-      targetId: null,
-      payload: { text: null },
-      requiresConfirm: false,
-      confirmPrompt: null,
-      spokenResponse: "Opening feed."
-    };
-  }
-  else if (lowerInput.includes('map') || lowerInput.includes('location')) {
-    return {
-      intent: 'navigate',
-      action: 'open_map',
-      targetId: null,
-      payload: { text: null },
-      requiresConfirm: false,
-      confirmPrompt: null,
-      spokenResponse: "Opening map."
-    };
-  }
-  else if (lowerInput.includes('command') || lowerInput.includes('dashboard') || lowerInput.includes('stats')) {
-    return {
-      intent: 'navigate',
-      action: 'open_dashboard',
-      targetId: null,
-      payload: { text: null },
-      requiresConfirm: false,
-      confirmPrompt: null,
-      spokenResponse: "Opening command center."
-    };
-  }
-  else if (lowerInput.includes('back') || lowerInput.includes('return')) {
-    return {
-      intent: 'navigate',
-      action: 'go_back',
-      targetId: null,
-      payload: { text: null },
-      requiresConfirm: false,
-      confirmPrompt: null,
-      spokenResponse: "Going back."
-    };
-  }
-  // Educate me — open camera in educate mode
-  else if (
-    lowerInput.includes('educate') ||
-    lowerInput.includes('teach me') ||
-    lowerInput.includes('what is this') ||
-    lowerInput.includes('learn about') ||
-    lowerInput.includes('tell me about')
+  if (
+    lower.includes('educate') || lower.includes('teach') ||
+    lower.includes('learn') || lower.includes('explain') ||
+    lower.includes('what is') || lower.includes("what's") ||
+    lower.includes('tell me')
   ) {
-    return {
-      intent: 'action',
-      action: 'educate',
-      targetId: null,
-      payload: { text: null },
-      requiresConfirm: false,
-      confirmPrompt: null,
-      spokenResponse: "Opening camera in educate mode. Point at something and I'll explain it."
-    };
+    return 'educate';
   }
-  // Analyze with AI agent (report page)
-  else if (
-    lowerInput.includes('analyze') ||
-    lowerInput.includes('analyse') ||
-    lowerInput.includes('ai agent') ||
-    lowerInput.includes('scan this') ||
-    lowerInput.includes('inspect') ||
-    lowerInput.includes('identify')
-  ) {
-    return {
-      intent: 'action',
-      action: 'analyze_report',
-      targetId: null,
-      payload: { text: null },
-      requiresConfirm: false,
-      confirmPrompt: null,
-      spokenResponse: "Analyzing your image now."
-    };
-  }
-  // 311 filing voice commands
-  else if (
-    lowerInput.includes('311') ||
-    lowerInput.includes('file report') ||
-    lowerInput.includes('file a report') ||
-    lowerInput.includes('submit report') ||
-    lowerInput.includes('city report') ||
-    lowerInput.includes('assisted filing')
-  ) {
-    return {
-      intent: 'navigate',
-      action: 'open_311_filing',
-      targetId: null,
-      payload: { text: null },
-      requiresConfirm: false,
-      confirmPrompt: null,
-      spokenResponse: "Opening assisted 311 filing. You can select a category to file a report with the City of Waterloo."
-    };
-  }
-  return null;
+  // Default: file_report
+  return 'file_report';
 }
 
 export async function POST(req: NextRequest) {
@@ -187,82 +64,37 @@ export async function POST(req: NextRequest) {
     if (!checkRateLimit(auth.userId, 'command')) return rateLimitError();
 
     const body = await req.json();
-    const { transcript, currentRoute, selectedItemId, selectedItemSource } = body;
+    const { transcript } = body;
 
     if (!transcript) {
       return Response.json({ error: 'Transcript required' }, { status: 400 });
     }
 
-    const input = JSON.stringify({
-      transcript,
-      currentRoute: currentRoute || '/feed',
-      selectedItemId: selectedItemId || null,
-      userRole: auth.role,
-    });
     console.log('[COMMAND] Input:', transcript);
 
-    let result: CommandResult;
+    let command: string;
+
     try {
-      result = await callGemini<CommandResult>(`${PROMPTS.voiceCommand}\n\nINPUT:\n${input}`);
-      console.log('[COMMAND] Raw Gemini Response:', JSON.stringify(result, null, 2));
+      const geminiResult = await callGemini<{ command: string }>(
+        `${PROMPTS.voiceCommand}\n\nINPUT: "${transcript}"`
+      );
+      console.log('[COMMAND] Gemini classified:', geminiResult.command);
+      command = geminiResult.command;
 
-      // POST-GEMINI OVERRIDE: If transcript contains "report"/"reports" but Gemini
-      // returned open_feed, override to open_reports (common misclassification).
-      const lowerTranscript = transcript.toLowerCase();
-      const isCreateIntent = lowerTranscript.includes('create') || lowerTranscript.includes('make') || lowerTranscript.includes('new') || lowerTranscript.includes('start') || lowerTranscript.includes('take a photo') || lowerTranscript.includes('snap');
-      if (
-        (lowerTranscript.includes('report') || lowerTranscript.includes('reports')) &&
-        !lowerTranscript.includes('feed') &&
-        !isCreateIntent &&
-        result.action === 'open_feed'
-      ) {
-        console.warn('[COMMAND] Override: transcript mentions "report" but Gemini returned open_feed → forcing open_reports');
-        result.action = 'open_reports';
-        result.spokenResponse = 'Opening reports.';
-      }
-      // If it's a create intent but Gemini misclassified, force create_report
-      if (isCreateIntent && (lowerTranscript.includes('report') || lowerTranscript.includes('photo') || lowerTranscript.includes('issue')) && result.action !== 'create_report') {
-        console.warn('[COMMAND] Override: create intent detected → forcing create_report');
-        result.action = 'create_report';
-        result.intent = 'action';
-        result.spokenResponse = 'Opening camera. Take a photo of the issue.';
-      }
-
-      // FALLBACK: If AI returns "unknown" but we detect strong keywords, FORCE it.
-      if (result.action === 'unknown' || !result.action || result.intent === 'unknown') {
-        const fallback = applyKeywordFallback(transcript); // Use raw transcript not input JSON
-        if (fallback) {
-          result = fallback;
-        } else {
-          console.warn('[COMMAND] Gemini returned "unknown" and no keywords found:', result);
-          result.action = 'unknown';
-          result.intent = 'unknown';
-        }
+      if (!COMMANDS[command]) {
+        console.warn('[COMMAND] Invalid Gemini response, falling back to keywords');
+        command = keywordFallback(transcript);
       }
     } catch (err) {
-      console.error('[COMMAND] Gemini error:', err);
-
-      // Try fallback on error too!
-      const fallback = applyKeywordFallback(transcript);
-      if (fallback) {
-        console.warn('[COMMAND] Gemini failed, using fallback:', fallback);
-        result = fallback;
-      } else {
-        result = {
-          intent: 'unknown',
-          action: 'unknown',
-          targetId: null,
-          payload: { text: null },
-          requiresConfirm: false,
-          confirmPrompt: null,
-          spokenResponse: "I'm having trouble connecting to the AI. Could you try again?"
-        };
-      }
+      console.error('[COMMAND] Gemini error, using keyword fallback:', err);
+      command = keywordFallback(transcript);
     }
 
-    return Response.json(result);
+    console.log('[COMMAND] Final command:', command);
+    const meta = COMMANDS[command];
+    return Response.json(buildResult(meta.action, meta.response));
   } catch (error) {
     console.error('[COMMAND] Error processing command:', error);
-    return Response.json({ error: 'Internal server error' }, { status: 500 });
+    return handleApiError(error instanceof Error ? error : new Error(String(error)));
   }
 }

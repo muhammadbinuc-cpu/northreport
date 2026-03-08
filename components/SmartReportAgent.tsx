@@ -44,7 +44,18 @@ interface AgentAnalysis {
   spoken_response: string;
 }
 
-type Step = 'intake' | 'scanning' | 'consultation' | 'form-preview' | 'filing';
+interface EducateResult {
+  identified_subject: string;
+  description: string;
+  community_impact: string;
+  why_it_matters: string;
+  related_topics: string[];
+  severity_context: string | null;
+  actionable_tips: string[];
+}
+
+type Step = 'intake' | 'scanning' | 'consultation' | 'form-preview' | 'filing' | 'educating' | 'educate-result';
+type AutoMode = null | 'file_report' | 'educate';
 
 const SEVERITY_CHIP: Record<string, string> = {
   critical: 'bg-red-700/[0.08] text-red-700 border-red-700/20',
@@ -286,11 +297,14 @@ export default function SmartReportAgent() {
   const [address, setAddress] = useState('137 University Ave W, Waterloo, ON');
   const [notes, setNotes] = useState('');
   const [analysis, setAnalysis] = useState<AgentAnalysis | null>(null);
+  const [educateResult, setEducateResult] = useState<EducateResult | null>(null);
   const [error, setError] = useState('');
   const [filingLoading, setFilingLoading] = useState(false);
   const [userLocation, setUserLocation] = useState({ lat: 43.6629, lng: -79.3957 });
   const [reportId, setReportId] = useState<string | null>(null);
   const [refNumber] = useState(() => `WR-${Date.now().toString(36).toUpperCase()}`);
+  const [autoMode, setAutoMode] = useState<AutoMode>(null);
+  const autoCaptureTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   /* ── Pick up captured image/GPS from CaptureCamera via sessionStorage ── */
   useEffect(() => {
@@ -367,7 +381,7 @@ export default function SmartReportAgent() {
   };
 
   /* ── Camera ── */
-  const openCamera = async () => {
+  const openCamera = async (shouldAutoCapture = false) => {
     setShowCamera(true);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -376,13 +390,19 @@ export default function SmartReportAgent() {
       });
       streamRef.current = stream;
       if (videoRef.current) videoRef.current.srcObject = stream;
+
+      if (shouldAutoCapture) {
+        autoCaptureTimerRef.current = setTimeout(() => {
+          capturePhoto();
+        }, 3000);
+      }
     } catch {
       setError('Could not access camera.');
       setShowCamera(false);
     }
   };
 
-  const capturePhoto = () => {
+  const capturePhoto = useCallback(() => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
     if (!video || !canvas) return;
@@ -391,29 +411,113 @@ export default function SmartReportAgent() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     ctx.drawImage(video, 0, 0);
-    setImage(canvas.toDataURL('image/jpeg', 0.7));
+    const capturedImage = canvas.toDataURL('image/jpeg', 0.7);
+    setImage(capturedImage);
     closeCamera();
-  };
+  }, []);
 
   const closeCamera = () => {
+    if (autoCaptureTimerRef.current) {
+      clearTimeout(autoCaptureTimerRef.current);
+      autoCaptureTimerRef.current = null;
+    }
     streamRef.current?.getTracks().forEach(t => t.stop());
     streamRef.current = null;
     setShowCamera(false);
   };
 
-  /* ── Listen for global voice "analyze" event ── */
+  /* ── Auto-mode progression: when image is set and autoMode is active ── */
   useEffect(() => {
-    const handler = () => { handleAnalyzeRef.current(); };
-    window.addEventListener('northreport:analyze', handler);
-    return () => { window.removeEventListener('northreport:analyze', handler); };
-  }, []);
+    if (!image || !autoMode) return;
+    if (autoMode === 'file_report') {
+      handleAnalyzeRef.current();
+    } else if (autoMode === 'educate') {
+      handleEducateRef.current();
+    }
+    setAutoMode(null);
+  }, [image, autoMode]);
 
-  /* ── Listen for global voice "open camera" event ── */
+  /* ── Auto-file after analysis completes ── */
+  const pendingAutoFileRef = useRef(false);
   useEffect(() => {
-    const handler = () => { openCamera(); };
-    window.addEventListener('northreport:open-camera', handler);
-    return () => { window.removeEventListener('northreport:open-camera', handler); };
-  }, []);
+    if (analysis && pendingAutoFileRef.current) {
+      pendingAutoFileRef.current = false;
+      setTimeout(() => handleFile(), 500);
+    }
+  }, [analysis]);
+
+  /* ── Educate: send image to educate API ── */
+  const handleEducateRef = useRef<() => void>(() => {});
+  const handleEducate = async () => {
+    if (!image) return;
+    setStep('educating');
+    setError('');
+    try {
+      const res = await fetch('/api/educate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Educate analysis failed');
+      }
+      const data: EducateResult = await res.json();
+      setEducateResult(data);
+      setStep('educate-result');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Educate analysis failed');
+      setStep('intake');
+    }
+  };
+  useEffect(() => { handleEducateRef.current = handleEducate; });
+
+  /* ── Voice event listeners ── */
+  useEffect(() => {
+    const onOpenCamera = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      openCamera(detail?.autoCapture === true);
+    };
+    const onAutoFile = () => {
+      pendingAutoFileRef.current = true;
+      setAutoMode('file_report');
+      if (image) {
+        handleAnalyzeRef.current();
+      } else {
+        openCamera(true);
+      }
+    };
+    const onEducate = () => {
+      setAutoMode('educate');
+      if (image) {
+        handleEducateRef.current();
+      } else {
+        openCamera(true);
+      }
+    };
+    const onSubmit = () => {
+      if (step === 'consultation' && analysis) {
+        handleFile();
+      } else if (step === 'form-preview') {
+        setStep('filing');
+      }
+    };
+    const onAnalyze = () => { handleAnalyzeRef.current(); };
+
+    window.addEventListener('northreport:open-camera', onOpenCamera);
+    window.addEventListener('northreport:auto-file', onAutoFile);
+    window.addEventListener('northreport:educate', onEducate);
+    window.addEventListener('northreport:submit', onSubmit);
+    window.addEventListener('northreport:analyze', onAnalyze);
+
+    return () => {
+      window.removeEventListener('northreport:open-camera', onOpenCamera);
+      window.removeEventListener('northreport:auto-file', onAutoFile);
+      window.removeEventListener('northreport:educate', onEducate);
+      window.removeEventListener('northreport:submit', onSubmit);
+      window.removeEventListener('northreport:analyze', onAnalyze);
+    };
+  }, [image, step, analysis]);
 
   /* ── Submit to AI ── */
   // Keep ref current for voice callback
@@ -733,6 +837,137 @@ export default function SmartReportAgent() {
                   />
                 ))}
               </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ─────────── STEP 2b: EDUCATING (loading) ─────────── */}
+        {step === 'educating' && (
+          <motion.div
+            key="educating"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ duration: 0.35, ease: 'easeOut' }}
+            className="space-y-6"
+          >
+            <div
+              className="rounded-2xl p-6"
+              style={{ background: 'var(--palette-cream)', border: '1px solid var(--border-hairline)', boxShadow: 'var(--shadow-glass-md)' }}
+            >
+              <div className="relative rounded-2xl overflow-hidden mb-6">
+                <img src={image!} alt="Analyzing" className="w-full max-h-72 object-cover" />
+                <ScanOverlay />
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(107, 15, 26, 0.1)', border: '1px solid rgba(107, 15, 26, 0.15)' }}>
+                  <ScanLine className="w-5 h-5 animate-pulse" style={{ color: 'var(--accent-primary)' }} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Educating...</p>
+                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Analyzing what&apos;s in the image</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5 mt-5 justify-center">
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <motion.div key={i} className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--accent-primary)' }} animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }} />
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ─────────── STEP 2c: EDUCATE RESULT ─────────── */}
+        {step === 'educate-result' && educateResult && (
+          <motion.div
+            key="educate-result"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="space-y-4"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(107, 15, 26, 0.1)', border: '1px solid rgba(107, 15, 26, 0.15)' }}>
+                <FileText className="w-5 h-5" style={{ color: 'var(--accent-primary)' }} />
+              </div>
+              <div>
+                <p className="text-sm font-semibold tracking-wide uppercase" style={{ color: 'var(--accent-primary)' }}>Educate</p>
+                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{educateResult.identified_subject}</p>
+              </div>
+            </div>
+
+            {image && (
+              <div className="rounded-xl overflow-hidden max-h-40">
+                <img src={image} alt="Analyzed" className="w-full h-40 object-cover opacity-90" />
+              </div>
+            )}
+
+            <div className="rounded-2xl p-5 space-y-4" style={{ background: 'var(--palette-cream)', border: '1px solid var(--border-hairline)', boxShadow: 'var(--shadow-glass-md)' }}>
+              <div>
+                <p className="text-[11px] uppercase tracking-wide font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Description</p>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>{educateResult.description}</p>
+              </div>
+
+              <div>
+                <p className="text-[11px] uppercase tracking-wide font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Why It Matters</p>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{educateResult.why_it_matters}</p>
+              </div>
+
+              <div>
+                <p className="text-[11px] uppercase tracking-wide font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Community Impact</p>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{educateResult.community_impact}</p>
+              </div>
+
+              {educateResult.severity_context && (
+                <div className="p-3 rounded-xl" style={{ background: 'rgba(107, 15, 26, 0.04)', border: '1px solid rgba(107, 15, 26, 0.1)' }}>
+                  <p className="text-xs font-medium" style={{ color: 'var(--accent-primary)' }}>Severity Context</p>
+                  <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>{educateResult.severity_context}</p>
+                </div>
+              )}
+
+              {educateResult.actionable_tips.length > 0 && (
+                <div>
+                  <p className="text-[11px] uppercase tracking-wide font-medium mb-2" style={{ color: 'var(--text-muted)' }}>What You Can Do</p>
+                  <ul className="space-y-1">
+                    {educateResult.actionable_tips.map((tip, i) => (
+                      <li key={i} className="text-sm flex gap-2" style={{ color: 'var(--text-secondary)' }}>
+                        <span style={{ color: 'var(--accent-primary)' }}>→</span> {tip}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {educateResult.related_topics.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 pt-2">
+                  {educateResult.related_topics.map((topic, i) => (
+                    <span key={i} className="px-2 py-1 rounded-md text-xs font-medium" style={{ background: 'rgba(107, 15, 26, 0.06)', color: 'var(--accent-primary)' }}>
+                      {topic}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setStep('intake'); setEducateResult(null); }}
+                className="flex-1 py-3 rounded-xl text-sm transition-all"
+                style={{ background: 'var(--palette-cream)', border: '1px solid var(--border-subtle)', color: 'var(--text-secondary)' }}
+              >
+                Back
+              </button>
+              <button
+                onClick={() => { setEducateResult(null); handleAnalyzeRef.current(); }}
+                className="flex-[2] py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all"
+                style={{ background: 'var(--accent-primary)', boxShadow: '0 4px 12px rgba(107, 15, 26, 0.2)' }}
+              >
+                <Send className="w-4 h-4" />
+                File as Report Instead
+              </button>
             </div>
           </motion.div>
         )}
