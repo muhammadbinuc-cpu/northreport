@@ -90,7 +90,7 @@ function MapPageInner() {
 
   return (
     <AppShell>
-      <div className="flex flex-col h-screen">
+      <div className="flex flex-col h-screen" style={{ background: '#ffffff' }}>
         <TopBar
           title="City Heatmap"
           neighborhood={neighborhood}
@@ -99,7 +99,7 @@ function MapPageInner() {
           liveCount={criticalCount}
         />
 
-        <main className="flex-1 relative">
+        <main className="flex-1 relative" style={{ background: '#ffffff' }}>
           <Map3D neighborhood={neighborhood} flyToLocation={flyToLocation} reports={reports} />
         </main>
       </div>

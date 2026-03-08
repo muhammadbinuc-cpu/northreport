@@ -53,6 +53,8 @@ const navItems = [
 
 export default function SideNav() {
     const pathname = usePathname();
+    const isMapPage = pathname === '/map';
+    const navBg = isMapPage ? 'rgba(255,255,255,0.95)' : 'rgba(245,240,225,0.92)';
 
     return (
         <>
@@ -61,7 +63,7 @@ export default function SideNav() {
                 className="fixed top-0 left-0 right-0 z-50 hidden md:flex items-center px-6"
                 style={{
                     height: 'var(--main-nav-height, 56px)',
-                    background: 'rgba(245,240,225,0.92)',
+                    background: navBg,
                     backdropFilter: 'blur(12px)',
                     WebkitBackdropFilter: 'blur(12px)',
                     borderBottom: '1px solid var(--border-hairline)',
@@ -115,7 +117,7 @@ export default function SideNav() {
                 className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden items-stretch justify-around px-2 pb-[env(safe-area-inset-bottom)]"
                 style={{
                     height: '64px',
-                    background: 'rgba(245,240,225,0.95)',
+                    background: isMapPage ? 'rgba(255,255,255,0.97)' : 'rgba(245,240,225,0.95)',
                     backdropFilter: 'blur(16px)',
                     WebkitBackdropFilter: 'blur(16px)',
                     borderTop: '1px solid var(--border-hairline)',
@@ -152,7 +154,7 @@ export default function SideNav() {
                 className="fixed top-0 left-0 right-0 z-50 flex md:hidden items-center px-4"
                 style={{
                     height: 'var(--main-nav-height, 56px)',
-                    background: 'rgba(245,240,225,0.92)',
+                    background: navBg,
                     backdropFilter: 'blur(12px)',
                     WebkitBackdropFilter: 'blur(12px)',
                     borderBottom: '1px solid var(--border-hairline)',

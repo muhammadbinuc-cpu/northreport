@@ -26,7 +26,7 @@ function AppShellInner({ children }: AppShellProps) {
             {/* Main Content Area */}
             <main
                 className={`min-h-screen pt-14 ${isMapPage ? '' : 'pb-20 md:pb-0'}`}
-                style={{ background: isMapPage ? undefined : 'var(--bg-base)' }}
+                style={{ background: isMapPage ? '#ffffff' : 'var(--bg-base)' }}
             >
                 {children}
             </main>

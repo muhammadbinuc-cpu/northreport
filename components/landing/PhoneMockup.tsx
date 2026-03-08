@@ -98,7 +98,12 @@ function FeedScreen() {
     { category: "Road", title: "Pothole on King St W", votes: 24, time: "2m ago" },
     { category: "Safety", title: "Broken streetlight at Erb & Caroline", votes: 18, time: "15m ago" },
     { category: "Waste", title: "Illegal dumping near park", votes: 11, time: "1h ago" },
+    { category: "Road", title: "Cracked sidewalk on Weber St", votes: 9, time: "3h ago" },
+    { category: "Safety", title: "Missing stop sign at Union", votes: 15, time: "4h ago" },
+    { category: "Infra", title: "Water main leak on Columbia", votes: 31, time: "5h ago" },
   ];
+
+  const doubled = [...items, ...items];
 
   return (
     <div className="h-full flex flex-col" style={{ background: "#faf7ed" }}>
@@ -121,50 +126,53 @@ function FeedScreen() {
           NorthReport Feed
         </span>
       </div>
-      <div className="flex-1 overflow-hidden p-3 space-y-2">
-        {items.map((item, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: i * 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="rounded-xl p-3"
-            style={{
-              background: "#fff",
-              border: "1px solid rgba(107,15,26,0.1)",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-            }}
-          >
-            <div className="flex items-center gap-2 mb-1.5">
-              <span
-                className="px-2 py-0.5 rounded-full text-[10px] font-semibold"
-                style={{ background: "rgba(107,15,26,0.08)", color: "#6b0f1a" }}
-              >
-                {item.category}
-              </span>
-              <span className="text-[10px]" style={{ color: "#999" }}>
-                {item.time}
-              </span>
-            </div>
-            <p
-              className="text-[11px] font-medium leading-snug"
-              style={{ color: "#1e1e1e" }}
+      <div className="flex-1 overflow-hidden relative">
+        <motion.div
+          className="p-3 space-y-2"
+          animate={{ y: [0, -(items.length * 76)] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        >
+          {doubled.map((item, i) => (
+            <div
+              key={i}
+              className="rounded-xl p-3"
+              style={{
+                background: "#fff",
+                border: "1px solid rgba(107,15,26,0.1)",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+              }}
             >
-              {item.title}
-            </p>
-            <div className="flex items-center gap-1 mt-1.5">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="#6b0f1a">
-                <path d="M12 4l-8 8h5v8h6v-8h5z" />
-              </svg>
-              <span
-                className="text-[10px] font-medium"
-                style={{ color: "#6b0f1a" }}
+              <div className="flex items-center gap-2 mb-1.5">
+                <span
+                  className="px-2 py-0.5 rounded-full text-[10px] font-semibold"
+                  style={{ background: "rgba(107,15,26,0.08)", color: "#6b0f1a" }}
+                >
+                  {item.category}
+                </span>
+                <span className="text-[10px]" style={{ color: "#999" }}>
+                  {item.time}
+                </span>
+              </div>
+              <p
+                className="text-[11px] font-medium leading-snug"
+                style={{ color: "#1e1e1e" }}
               >
-                {item.votes}
-              </span>
+                {item.title}
+              </p>
+              <div className="flex items-center gap-1 mt-1.5">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="#6b0f1a">
+                  <path d="M12 4l-8 8h5v8h6v-8h5z" />
+                </svg>
+                <span
+                  className="text-[10px] font-medium"
+                  style={{ color: "#6b0f1a" }}
+                >
+                  {item.votes}
+                </span>
+              </div>
             </div>
-          </motion.div>
-        ))}
+          ))}
+        </motion.div>
       </div>
     </div>
   );

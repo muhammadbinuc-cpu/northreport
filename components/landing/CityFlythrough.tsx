@@ -118,14 +118,14 @@ function FinaleOverlay({ visible }: { visible: boolean }) {
             transition={{ duration: 0.6, delay: 0.35 }}
           >
             <Link
-              href={user ? "/dashboard" : "/api/auth/login"}
+              href={user ? "/feed" : "/api/auth/login"}
               className="inline-block px-8 py-4 text-lg font-semibold rounded-lg transition-all duration-200 shadow-lg"
               style={{ background: "#6b0f1a", color: "#fff" }}
-              aria-label={user ? "Go to your NorthReport dashboard" : "Get started with NorthReport"}
+              aria-label={user ? "Go to your NorthReport feed" : "Get started with NorthReport"}
               onMouseEnter={(e) => (e.currentTarget.style.background = "#4a0a12")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "#6b0f1a")}
             >
-              {user ? "Go to Dashboard →" : "Get Started →"}
+              {user ? "Go to Feed →" : "Get Started →"}
             </Link>
           </motion.div>
 
