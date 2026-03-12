@@ -783,21 +783,23 @@ body {
   font-family: var(--font-utility);
   font-weight: 600;
   padding: var(--space-3) var(--space-6);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   border: none;
-  transition: all var(--duration-fast) var(--ease-smooth);
+  transition: transform var(--duration-fast) var(--ease-smooth),
+    background var(--duration-fast) var(--ease-smooth),
+    box-shadow var(--duration-fast) var(--ease-smooth);
   box-shadow: var(--shadow-paper-sm);
   cursor: pointer;
 }
 
 .btn-primary:hover {
   background: var(--accent-hover);
-  box-shadow: var(--shadow-paper-md);
-  transform: translateY(-1px);
+  transform: scale(1.03);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.13);
 }
 
 .btn-primary:active {
-  transform: translateY(0);
+  transform: scale(0.98);
   box-shadow: var(--shadow-pressed);
 }
 
